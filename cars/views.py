@@ -15,6 +15,6 @@ class CarModelViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [AllowAny]  # Allow any user to access this viewset
 
 class CarViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Car.Objects.all()
+    queryset = Car.objects.all()
     serializer_class = CarSerializer
     permission_classes = [AllowAny]  # Allow any user to access this viewset

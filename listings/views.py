@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import viewsets, permissions
-from .models import Listing
-from .serializers import ListingSerializer
+from .models import Listing, ListingImage
+from .serializers import ListingSerializer, ListingImageSerializer
 
 class ListingViewSet(viewsets.ModelViewSet):
     queryset = Listing.objects.all()
@@ -15,4 +15,7 @@ class ListingViewSet(viewsets.ModelViewSet):
             onu hangi kullanıcının oluşturduğunu (request.user) kaydetmeye yarar.'''
 
 
-# Create your views here.
+class ListingImageViewSet(viewsets.ModelViewSet):
+    queryset = ListingImage.objects.all()
+    serializer_class = ListingImageSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]

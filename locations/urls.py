@@ -1,5 +1,5 @@
 from rest_framework .routers import DefaultRouter
-from views import CityViewSet
+from .views import CityViewSet
 from django.urls import path, include
 
 router = DefaultRouter()

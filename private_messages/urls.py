@@ -1,12 +1,9 @@
 from rest_framework import routers
 from django.urls import path, include
-from .views import ListingViewSet, ListingImageViewSet
+from .views import MessageViewSet
 
 router = routers.DefaultRouter()
-router.register(r'listings', ListingViewSet)
-router.register(r'listing-images', ListingImageViewSet)
-
+router.register(r'messages', MessageViewSet)
 urlpatterns = [
     path('', include(router.urls)),
-
 ]

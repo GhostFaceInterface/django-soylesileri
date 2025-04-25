@@ -50,3 +50,13 @@ class CarSerializer(serializers.ModelSerializer):
             "engine_power",
         ]
 
+    def validate_engine_power(self, value):
+        if value <= 0:
+            raise serializers.ValidationError("Motor gücü en az 1 HP olmalıdır.")
+        return value
+    
+    def validate_year(self, value):
+        if value < 1885:
+            raise serializers.ValidationError("Yıl 1885 veya sonrası olmalıdır (ilk otomobil yılı).")
+        return value
+

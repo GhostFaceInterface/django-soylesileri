@@ -43,7 +43,7 @@ class CarTrim(models.Model):
 class Car(models.Model):
     brand = models.ForeignKey(CarBrand, on_delete=models.CASCADE, related_name='cars')
     model = models.ForeignKey(CarModel, on_delete=models.CASCADE, related_name='cars')
-    vairant = models.ForeignKey(CarVariant, on_delete=models.SET_NULL, related_name='cars', null=True, blank=True)
+    variant = models.ForeignKey(CarVariant, on_delete=models.SET_NULL, related_name='cars', null=True, blank=True)
     trim = models.ForeignKey(CarTrim, on_delete=models.SET_NULL, related_name='cars', null=True, blank=True)
     year = models.PositiveIntegerField()
     mileage = models.PositiveIntegerField()

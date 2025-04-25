@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Car, CarBrand, CarModel
+from .models import Car, CarBrand, CarModel, CarVariant, CarTrim
 
 class CarBrandSerializer(serializers.ModelSerializer):
     class Meta:
@@ -12,9 +12,27 @@ class CarModelSerializer(serializers.ModelSerializer):
         model = CarModel
         fields = ['id', 'name', 'brand']
 
+
+class CarVariantSerializer(serializers.ModelSerializer):
+    model = CarModelSerializer(read_only=True)
+    class Meta:
+        model = CarVariant
+        fields = ['id', 'name', 'model']
+
+class CarTrimSerializer(serializers.ModelSerializer):
+    variant = CarVariantSerializer(read_only=True)
+    class Meta:
+        model = CarTrim
+        fields = ['id', 'name', 'variant']
+
+
+
+
 class CarSerializer(serializers.ModelSerializer):
     brand = CarBrandSerializer(read_only=True)
     model = CarModelSerializer(read_only=True)
+    variant = CarVariantSerializer(read_only=True)
+    trim = CarTrimSerializer(read_only=True)
     class Meta: 
         model = Car
         fields = [
@@ -30,3 +48,4 @@ class CarSerializer(serializers.ModelSerializer):
             "engine_power",
             "created_at"
         ]
+

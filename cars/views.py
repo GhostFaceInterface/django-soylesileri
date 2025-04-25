@@ -1,7 +1,19 @@
 from django.shortcuts import render
 from rest_framework import viewsets
-from .models import Car, CarBrand, CarModel
-from .serializers import CarSerializer, CarBrandSerializer, CarModelSerializer
+from .models import (
+    Car, 
+    CarBrand, 
+    CarModel,
+    CarVariant,
+    CarTrim
+)
+from .serializers import (
+    CarSerializer,
+    CarBrandSerializer, 
+    CarModelSerializer,
+    CarTrimSerializer,
+    CarVariantSerializer
+    )
 from rest_framework.permissions import AllowAny
 
 class CarBrandViewSet(viewsets.ReadOnlyModelViewSet):
@@ -13,6 +25,16 @@ class CarModelViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = CarModel.objects.all()
     serializer_class = CarModelSerializer
     permission_classes = [AllowAny]  # Allow any user to access this viewset
+
+class CarVariantViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = CarVariant.objects.all()
+    serializer_class = CarVariantSerializer
+    permission_classes = [AllowAny]  # Allow any user to access this viewset
+
+class CarTrimViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = CarTrim.objects.all()
+    serializer_class = CarTrimSerializer
+    permission_classes = [AllowAny]  # Allow any user to access this viewset    
 
 class CarViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Car.objects.all()

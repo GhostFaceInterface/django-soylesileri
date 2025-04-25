@@ -24,10 +24,27 @@ class CarModel(models.Model):
     def __str__(self):
         return f"{self.brand.name} {self.name}"
     
+class CarVariant(models.Model):
+    car = models.ForeignKey(CarModel, on_delete=models.CASCADE, related_name='variants')
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return f"{self.model.brand.name} {self.model.name} {self.name}"
+   
+   
+class CarTrim(models.Model):
+    variant = models.ForeignKey(CarVariant, on_delete=models.CASCADE, related_name='trims')
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return f"{self.variant} {self.name}"
+    
 
 class Car(models.Model):
     brand = models.ForeignKey(CarBrand, on_delete=models.CASCADE, related_name='cars')
     model = models.ForeignKey(CarModel, on_delete=models.CASCADE, related_name='cars')
+    vairant = models.ForeignKey(CarVariant, on_delete=models.SET_NULL, related_name='cars', null=True, blank=True)
+    trim = models.ForeignKey(CarTrim, on_delete=models.SET_NULL, related_name='cars', null=True, blank=True)
     year = models.PositiveIntegerField()
     mileage = models.PositiveIntegerField()
 
@@ -57,4 +74,3 @@ class Car(models.Model):
         return f"{self.brand.name} {self.model.name} ({self.year})" 
 
     
-

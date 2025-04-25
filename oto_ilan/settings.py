@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     "private_messages",
     "locations",
     'django_cleanup.apps.CleanupConfig',  # Resim silinince dosyayı da otomatik siler (isteğe bağlı)
-
+  
 ]
 
 MIDDLEWARE = [
@@ -142,5 +142,12 @@ REST_FRAMEWORK = {
     ),
     "DEFAULT_PERMISSION_CLASSES":(
         "rest_framework.permissions.IsAuthenticatedOrReadOnly",
-    )
+    ),
+    "DEFAULT_FILTER_BACKENDS":[
+        "django_filters.rest_framework.DjangoFilterBackend",
+        "rest_framework.filters.SearchFilter",
+        "rest_framework.filters.OrderingFilter",
+    ],
+
+
 }

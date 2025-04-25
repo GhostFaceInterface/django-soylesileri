@@ -4,11 +4,12 @@ from .models import Listing, ListingImage
 from .serializers import ListingSerializer, ListingImageSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters 
+from .permissions import IsOwnerOrReadOnly
 
 class ListingViewSet(viewsets.ModelViewSet):
     queryset = Listing.objects.all()
     serializer_class = ListingSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]  
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]  
     # Allow authenticated users to create, update, and delete listings, but allow anyone to read them
 
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]

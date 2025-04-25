@@ -39,6 +39,8 @@ class CarSerializer(serializers.ModelSerializer):
             "id",
             "brand",
             "model",
+            "variant",
+            "trim",
             "year",
             "mileage",
             "fuel_type",
@@ -46,6 +48,5 @@ class CarSerializer(serializers.ModelSerializer):
             "color",
             "body_type",
             "engine_power",
-            "created_at"
         ]
 

@@ -29,7 +29,7 @@ class CarVariant(models.Model):
     name = models.CharField(max_length=100)
 
     def __str__(self):
-        return f"{self.model.brand.name} {self.model.name} {self.name}"
+        return f"{self.car.brand.name} {self.car.name} {self.name}"
    
    
 class CarTrim(models.Model):

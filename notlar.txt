@@ -28,3 +28,45 @@ get_queryset(), perform_create(), perform_update() → Motorun çalışırken k�
 Sen sadece vida ayarı yapıyorsun (override ediyorsun), motor zaten çalışıyor.
 
 ------------------------------------------------------------------------------------------------------------------------------------
+apps.py Django'nun her uygulama (app) için oluşturduğu konfigürasyon dosyasıdır.
+
+Özetle:
+
+“Bu app yüklenirken neler yapılacak?” bilgisini tutar.
+
+Örneğin:
+
+Signal'leri yüklemek
+
+Özel ayarlar yapmak
+
+Gelişmiş konfigürasyonlar eklemek için kullanılır
+
+------------------------------------------------------------------------------------------------------------------------------------
+utils.py dosyası = yardımcı fonksiyonlar klasörü
+
+Tek sorumluluğu olan, genellikle “bağımsız” ve “yeniden kullanılabilir” fonksiyonları barındırır.
+
+📌 Neden views.py içine yazmıyoruz?
+Çünkü views.py sadece şunlara odaklıdır:
+
+HTTP isteği aldı mı?
+
+Yanıt ne olacak?
+
+Kim erişebilir?
+
+Form geçerli mi?
+
+Ama örneğin:
+
+e-posta göndermek
+
+QR kod üretmek
+
+tarih hesaplamak
+
+şifreyi hash'lemek
+gibi şeyler view’in işi değildir.
+
+------------------------------------------------------------------------------------------------------------------------------------

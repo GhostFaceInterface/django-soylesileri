@@ -1,8 +1,9 @@
-from django.shortcuts import render
 from rest_framework import viewsets
 from .models import User
 from .serializers import UserSerializer
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from .utils import send_welcome_email
+
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -13,4 +14,7 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticatedOrReadOnly] # Only authenticated users can edit, all can view
 
+    def perform_create(self, serializer):
+        user = serializer.save()
+        send_welcome_email(user.email)
 # Create your views here.

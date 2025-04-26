@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     "django_filters",
     "users", 
     "cars",
-    "listings",
+    'listings.apps.ListingsConfig', #apps.py içerisine yeni signal eklediğimiz için artık sadece listings yazamayız
     "private_messages",
     "locations",
     'django_cleanup.apps.CleanupConfig',  # Resim silinince dosyayı da otomatik siler (isteğe bağlı)
@@ -151,6 +151,13 @@ REST_FRAMEWORK = {
 
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 30
-
-
 }
+
+# Email Configuration
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = "m.besiraslan40@gmail.com"
+EMAIL_HOST_PASSWORD = "okpfkelrhtilljvx"
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

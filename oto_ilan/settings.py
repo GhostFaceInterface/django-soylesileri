@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     "private_messages",
     "locations",
     'django_cleanup.apps.CleanupConfig',  # Resim silinince dosyayı da otomatik siler (isteğe bağlı)
-  
+    "core",
 ]
 
 MIDDLEWARE = [
@@ -150,7 +150,8 @@ REST_FRAMEWORK = {
     ],
 
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
-    "PAGE_SIZE": 30
+    "PAGE_SIZE": 30,
+
 }
 
 # Email Configuration

@@ -70,3 +70,17 @@ tarih hesaplamak
 gibi şeyler view’in işi değildir.
 
 ------------------------------------------------------------------------------------------------------------------------------------
+
+class User {
+    String name;
+
+    void printName() {
+        System.out.println(this.name);
+    }
+}
+this burada sınıfın örneğini (instance) temsil eder.
+Python’da self onun aynısıdır.
+
+Python'da her sınıf metodu tanımlanırken self ilk parametre olmak ZORUNDADIR
+
+Yazmasan TypeError: missing 1 required positional argument hatası alırsın

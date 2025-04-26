@@ -2,6 +2,7 @@ from django.shortcuts import render
 from rest_framework import viewsets, permissions
 from .models import Message
 from .serializers import MessageSerializer
+from core.throttles import MessageSendThrottle
 
 class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all()
@@ -27,6 +28,11 @@ class MessageViewSet(viewsets.ModelViewSet):
         ) | Message.objects.filter(
             receviver=user # Kullanıcının alıcı olduğu mesajlar
         )
+    
+    def get_throttles(self):
+        if self.action == "create":
+            return [MessageSendThrottle()]
+        return super().get_throttles() #Ey Django, bu metodun default davranışını aynen çalıştır.
         
 
     def perform_create(self, serializer):

@@ -5,6 +5,7 @@ from .serializers import ListingSerializer, ListingImageSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters 
 from .permissions import IsOwnerOrReadOnly
+from core.throttles import ListingCreateThrottle
 
 class ListingViewSet(viewsets.ModelViewSet):
     queryset = Listing.objects.all()
@@ -36,6 +37,11 @@ class ListingViewSet(viewsets.ModelViewSet):
         """
         instance.is_deleted = True
         instance.save()
+
+    def get_throttles(self):
+        if self.action == "create":
+            return [ListingCreateThrottle()]
+        return super().get_throttles()
 
 class ListingImageViewSet(viewsets.ModelViewSet):
     queryset = ListingImage.objects.all()

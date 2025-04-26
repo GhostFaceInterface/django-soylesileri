@@ -152,6 +152,13 @@ REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 30,
 
+    "DEFAULT_THROTTLE_RATES":{
+        "listing_create": "5/minute",
+        "message_send": "100/minute",
+        "login": "15/minute",
+
+    }
+
 }
 
 # Email Configuration

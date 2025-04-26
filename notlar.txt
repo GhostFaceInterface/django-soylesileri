@@ -1,0 +1,30 @@
+Django'nun ModelViewSet sınıfı aslında çok sayıda hazır (built-in) fonksiyonu miras alır.
+
+Bu hazır fonksiyonlar şunları yapar:
+
+GET /api/listings/ → get_queryset() fonksiyonunu çağırır.
+
+POST /api/listings/ → perform_create() fonksiyonunu çağırır.
+
+PUT /api/listings/5/ → perform_update() fonksiyonunu çağırır.
+
+DELETE /api/listings/5/ → perform_destroy() fonksiyonunu çağırır.
+
+------------------------------------------------------------------------------------------------------------------------------------
+
+
+list() → bir HTTP GET isteği geldiğinde Django tarafından otomatik çağrılır.
+
+list() çalışırken → verileri almak için get_queryset() fonksiyonunu çağırır.
+
+Sen get_queryset() fonksiyonunu ister override eder, istersen de override etmeden Django’nun varsayılan davranışını kullanırsın.
+
+------------------------------------------------------------------------------------------------------------------------------------
+
+list(), create(), update(), destroy() → Otomatik çalışan "dev motorlar".
+
+get_queryset(), perform_create(), perform_update() → Motorun çalışırken küçük ayar çekebileceğin vidalar.
+
+Sen sadece vida ayarı yapıyorsun (override ediyorsun), motor zaten çalışıyor.
+
+------------------------------------------------------------------------------------------------------------------------------------

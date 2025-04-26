@@ -17,11 +17,25 @@ class ListingViewSet(viewsets.ModelViewSet):
     search_fields = ['title', 'description', 'car__brand__name', 'car__model__name', 'car__fuel_type']
     ordering_fields = ['created_at', 'price']
 
+    def get_queryset(self):
+        return Listing.objects.filter(is_deleted=False)
+
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
         '''perform_create, POST isteğiyle yeni bir Listing oluşturulurken,
             onu hangi kullanıcının oluşturduğunu (request.user) kaydetmeye yarar.'''
 
+    def perform_destroy(self, instance):
+        """
+        Bu metot, bir nesneyi fiziksel olarak silmek yerine "soft delete" işlemi yapar.
+        - instance: Silinmek istenen nesne.
+        İşlem:
+        1. Nesnenin `is_deleted` alanını `True` olarak işaretler.
+        2. Değişikliği veri tabanına kaydeder.
+        Bu yöntem, veri kaybını önlemek ve silinen nesneleri gerektiğinde geri getirebilmek için kullanılır.
+        """
+        instance.is_deleted = True
+        instance.save()
 
 class ListingImageViewSet(viewsets.ModelViewSet):
     queryset = ListingImage.objects.all()

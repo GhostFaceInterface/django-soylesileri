@@ -3,6 +3,8 @@ from .models import User
 from .serializers import UserSerializer
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from .utils import send_welcome_email
+from core.throttles import LoginThrottle
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 
 
@@ -18,3 +20,7 @@ class UserViewSet(viewsets.ModelViewSet):
         user = serializer.save()
         send_welcome_email(user.email)
 # Create your views here.
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    def get_throttles(self):
+        return [LoginThrottle()]

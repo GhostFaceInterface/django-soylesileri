@@ -40,10 +40,10 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "django_filters",
-    "users", 
+    "users.apps.UsersConfig", 
     "cars",
     'listings.apps.ListingsConfig', #apps.py içerisine yeni signal eklediğimiz için artık sadece listings yazamayız
-    "private_messages",
+    "private_messages.apps.PrivateMessagesConfig",
     "locations",
     'django_cleanup.apps.CleanupConfig',  # Resim silinince dosyayı da otomatik siler (isteğe bağlı)
     "core",
@@ -169,3 +169,45 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = "m.besiraslan40@gmail.com"
 EMAIL_HOST_PASSWORD = "okpfkelrhtilljvx"
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+#Logging Configuration
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+
+    'formatters': {
+        'verbose': {
+            'format': '[{asctime}] {levelname} {name} - {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname}: {message}',
+            'style': '{',
+        },
+    },
+
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs/project.log'),
+            'formatter': 'verbose',
+        },
+    },
+
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',  # ya da 'DEBUG'
+            'propagate': True,
+        },
+        'custom': {  # biz bunu kendimiz kullanacağız
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+        },
+    }
+}

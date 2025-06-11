@@ -26,7 +26,7 @@ class MessageViewSet(viewsets.ModelViewSet):
         return Message.objects.filter(
             sender=user # Kullanıcının gönderici olduğu mesajlar
         ) | Message.objects.filter(
-            receviver=user # Kullanıcının alıcı olduğu mesajlar
+            receiver=user # Kullanıcının alıcı olduğu mesajlar
         )
     
     def get_throttles(self):

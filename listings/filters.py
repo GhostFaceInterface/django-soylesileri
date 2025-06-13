@@ -25,14 +25,14 @@ class ListingsFilter(django_filters.FilterSet):
         label="Maksimum Fiyat"
     )
 
-    min_milage = django_filters.NumberFilter(
-        field_name="car__milage",
+    min_mileage = django_filters.NumberFilter(
+        field_name="car__mileage",
         lookup_expr="gte",  # greater than or equal (>=)
         label="Minimum Kilometre"
     )
 
-    max_milage = django_filters.NumberFilter(
-        field_name="car__milage",
+    max_mileage = django_filters.NumberFilter(
+        field_name="car__mileage",
         lookup_expr="lte",
         label="Maksimum Kilometre"
     )
@@ -109,13 +109,13 @@ class ListingsFilter(django_filters.FilterSet):
             ("created_at","created_at"),
             ("price", "price"),
             ("car__year", "year"),
-            ("car__milage", "milage"),
+            ("car__mileage", "mileage"),
         ),
         field_labels={
             "created_at": "Oluşturulma Tarihi",
             "price": "Fiyat",
             "car__year": "Yıl",
-            "car__milage": "Kilometre",
+            "car__mileage": "Kilometre",
         }
     )
 
@@ -124,8 +124,8 @@ class ListingsFilter(django_filters.FilterSet):
         fields = [
             "min_price",
             "max_price",
-            "min_milage",
-            "max_milage",
+            "min_mileage",
+            "max_mileage",
             "min_year",
             "max_year",
             "fuel_type",

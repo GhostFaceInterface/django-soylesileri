@@ -153,16 +153,30 @@ Bu proje, Django framework'ü kullanarak otomobil ilanlarının listelendiği, k
 
 ### **Faz 2: Gelişmiş Özellikler (2 Hafta)**
 
-#### 2.1 Gelişmiş Filtreleme ve Arama
+#### 2.1 Gelişmiş Filtreleme ve Arama ✅
 ```python
-# listings/filters.py geliştirmeleri:
-- [ ] Fiyat aralığı filtreleme (min_price, max_price)
-- [ ] Kilometre aralığı filtreleme
-- [ ] Yıl aralığı filtreleme
-- [ ] Yakıt tipi filtreleme
-- [ ] Vites tipi filtreleme
-- [ ] Full-text search (PostgreSQL için)
+# listings/filters.py geliştirmeleri - TAMAMLANDI:
+- [x] Fiyat aralığı filtreleme (min_price, max_price) ✅
+- [x] Kilometre aralığı filtreleme ✅
+- [x] Yıl aralığı filtreleme ✅
+- [x] Yakıt tipi filtreleme (MultipleChoiceFilter) ✅
+- [x] Vites tipi filtreleme (MultipleChoiceFilter) ✅
+- [x] Renk filtreleme (icontains) ✅
+- [x] Motor gücü aralığı filtreleme ✅
+- [x] Şehir filtreleme (ModelMultipleChoiceFilter) ✅
+- [x] Marka filtreleme (ModelMultipleChoiceFilter) ✅
+- [x] Başlık ve açıklama arama (icontains) ✅
+- [x] Esnek sıralama sistemi (OrderingFilter) ✅
+- [x] CSVWidget kullanımı (çoklu seçim için) ✅
 ```
+
+**Öğrenilen Konular:**
+- ✅ Django-filter kütüphanesi ve FilterSet kullanımı
+- ✅ NumberFilter, CharFilter, MultipleChoiceFilter türleri
+- ✅ lookup_expr parametreleri (gte, lte, icontains, contains)
+- ✅ ModelMultipleChoiceFilter ve CSVWidget
+- ✅ OrderingFilter ile dinamik sıralama
+- ✅ Field_name ile ilişkili modellere erişim (__)
 
 #### 2.2 Medya Yönetimi Geliştirmeleri
 ```python
@@ -492,11 +506,12 @@ toyota_models = toyota.models.all()  # related_name sayesinde
 - **11 Haziran 2025**: Proje yol haritası oluşturuldu
 - **11 Haziran 2025**: Mevcut durumu analiz edildi
 - **11 Haziran 2025**: Backend tamamlama planı detaylandırıldı
+- **13 Haziran 2025**: Faz 2.1 - Gelişmiş Filtreleme ve Arama sistemi tamamlandı ✅
 
 ---
 
 *Bu doküman proje ilerledikçe güncellenecek ve genişletilecektir.*
 
-**Son güncelleme:** 11 Haziran 2025  
-**Proje durumu:** Backend %70 tamamlandı  
-**Sonraki milestone:** Backend hata düzeltmeleri ve mesajlaşma sistemi geliştirme
+**Son güncelleme:** 13 Haziran 2025  
+**Proje durumu:** Backend %75 tamamlandı  
+**Sonraki milestone:** Faz 2.2 - Medya Yönetimi Geliştirmeleri

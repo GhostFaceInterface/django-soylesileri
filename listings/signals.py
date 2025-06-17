@@ -26,6 +26,8 @@ from django.db.models.signals import pre_save, post_save, post_delete
 from django.dispatch import receiver
 from .models import Listing, ListingImage
 import logging
+from .utils import ImageProcessor
+from PIL import Image
 
 logger = logging.getLogger("custom")
 
@@ -92,3 +94,63 @@ def delete_listing_image_file(sender, instance, **kwargs):
             instance.image.delete(save=False)
         except Exception as e:
             logger.warning(f"[ListingImage] Fiziksel dosya silinemedi. ID={instance.id} Hata: {e}")
+
+
+@receiver(pre_save, sender=ListingImage)
+def process_image_before_save(sender, instance, **kwargs):
+    """
+    Model kaydedilmeden önce resim işleme
+    - Validation
+    - File info extraction
+    - Filename generation
+    """
+
+    if not instance.pk and instance.image:
+        try:
+            # 1 Resim doğrulama
+            ImageProcessor.validate_image(instance.image)
+
+            # 2 Dosya bilgilerini al
+            temp_image = Image.open(instance.image)
+            instance.width = temp_image.width
+            instance.height = temp_image.height
+            instance.file_size = instance.image.size
+            temp_image.close()
+
+            # 3 Yeni dosya adını oluştur
+            original_name = instance.image.name
+            new_filename = ImageProcessor.generate_filename(original_name=original_name)
+            instance.image.name = new_filename
+
+            logger.info(f"Resim hazırlandı: {new_filename} ({instance.width}x{instance.height})")
+        except Exception as e:
+            logger.error(f"Resim işleme hatası: {e}")
+            raise e
+        
+
+@receiver(post_save, sender=ListingImage)
+def create_thumbnail_after_save(sender, instance, created, **kwargs):
+    # Model kaydedildikten sonra thumbnail oluşturma
+    if created and instance.image:
+        try:
+            import os
+            thumbnails = ImageProcessor.create_thumbnails(
+                instance.image,
+                os.path.splitext(instance.image.name)[0]  # Dosya adını uzantı olmadan al
+            )
+            # Thumbnail dosya yollarını güncelle (döngü önlemek için direkt DB update)
+            update_fields = {}
+            if "thumbnail" in thumbnails:
+                update_fields['thumbnail'] = thumbnails['thumbnail']
+            if "medium" in thumbnails:
+                update_fields['medium_image'] = thumbnails['medium']
+            if "large" in thumbnails:
+                update_fields['large_image'] = thumbnails['large']
+            
+            if update_fields:
+                ListingImage.objects.filter(pk=instance.pk).update(**update_fields)
+                logger.info(f"Thumbnail ve diğer boyutlar oluşturuldu: {instance.image.name}")
+        except Exception as e:
+            logger.error(f"Thumbnail oluşturma hatası: {e}")
+
+

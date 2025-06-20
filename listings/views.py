@@ -161,12 +161,12 @@ class ListingImageViewSet(viewsets.ModelViewSet):
                 }, status=status.HTTP_403_FORBIDDEN)
                 
             with transaction.atomic():
-                if not isinstance(item, dict) or "id" not in item or "order" not in item:
-                    return Response({
-                        "success": False,
-                        "error": f"Invalid item format: {item}"
-                    }, status=status.HTTP_400_BAD_REQUEST)
                 for item in image_orders:
+                    if not isinstance(item, dict) or "id" not in item or "order" not in item:
+                        return Response({
+                            "success": False,
+                            "error": f"Invalid item format: {item}"
+                        }, status=status.HTTP_400_BAD_REQUEST)
                     ListingImage.objects.filter(
                         id=item["id"],
                         listing=listing

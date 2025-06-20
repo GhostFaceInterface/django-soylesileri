@@ -88,3 +88,5 @@ Thumbs.db
 # Database backups
 *.sql
 *.sqlite
+logs/
+!oto-ilan-frontend/src/lib/

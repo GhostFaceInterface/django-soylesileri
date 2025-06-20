@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 from .models import User
 from .serializers import UserSerializer
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
 from .utils import send_welcome_email
 from core.throttles import LoginThrottle
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -14,7 +14,12 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly] # Only authenticated users can edit, all can view
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get_permissions(self):
+        if self.action == "create":
+            return [AllowAny()]
+        return [permission() for permission in self.permission_classes]
 
     def perform_create(self, serializer):
         user = serializer.save()

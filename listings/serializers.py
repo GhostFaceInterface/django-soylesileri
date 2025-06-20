@@ -140,7 +140,7 @@ class ListingSerializer(serializers.ModelSerializer):
         return None
         
     def get_image_count(self, obj):
-        return obj.İmages.count()
+        return obj.images.count()
     
 
     def validate_price(self,value):

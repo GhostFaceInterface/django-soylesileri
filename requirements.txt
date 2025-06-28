@@ -3,6 +3,7 @@ chardet==5.2.0
 cssselect2==0.8.0
 Django==5.2
 django-cleanup==9.0.0
+django-cors-headers==4.6.0
 django-filer==3.3.1
 django-filter==25.1
 django-polymorphic==3.1.0
@@ -18,3 +19,11 @@ sqlparse==0.5.3
 svglib==1.5.1
 tinycss2==1.4.0
 webencodings==0.5.1
+# Google OAuth and Social Authentication
+django-allauth==0.63.3
+google-auth==2.34.0
+google-auth-oauthlib==1.2.1
+# Email verification and utilities
+django-extensions==3.2.3
+celery==5.4.0
+redis==5.2.0

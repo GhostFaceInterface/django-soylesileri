@@ -1,0 +1,277 @@
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Satoshi:wght@400;500;600;700;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom CSS Variables */
+:root {
+  /* Premium gradients */
+  --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradient-blue: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  --gradient-ocean: linear-gradient(135deg, #0ea5e9 0%, #0369a1 100%);
+  --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  --gradient-mesh: radial-gradient(at 40% 20%, hsla(228, 100%, 74%, 1) 0px, transparent 50%), 
+                   radial-gradient(at 80% 0%, hsla(189, 100%, 56%, 1) 0px, transparent 50%), 
+                   radial-gradient(at 80% 50%, hsla(355, 100%, 93%, 1) 0px, transparent 50%);
+  
+  /* Glass morphism */
+  --glass-bg: rgba(255, 255, 255, 0.25);
+  --glass-border: rgba(255, 255, 255, 0.18);
+  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  
+  /* Dark theme glass */
+  --glass-bg-dark: rgba(0, 0, 0, 0.25);
+  --glass-border-dark: rgba(255, 255, 255, 0.125);
+  
+  /* Animations */
+  --animation-fast: 0.15s;
+  --animation-normal: 0.3s;
+  --animation-slow: 0.5s;
+  
+  /* Elevation shadows */
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Base styles */
+* {
+  border-color: rgb(226 232 240 / 1);
+  scroll-behavior: smooth;
+}
+
+html {
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  font-variant-ligatures: normal;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: #f8fafc;
+  color: #1e293b;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #2563eb, #1e40af);
+}
+
+/* Selection styles */
+::selection {
+  background-color: rgba(59, 130, 246, 0.3);
+  color: #1e40af;
+}
+
+/* Focus styles */
+.focus-ring {
+  @apply outline-none ring-2 ring-primary-500 ring-offset-2 ring-offset-white transition-all duration-200;
+}
+
+/* Glass morphism utility classes */
+@layer components {
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+  }
+  
+  .glass-dark {
+    background: var(--glass-bg-dark);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border-dark);
+    box-shadow: var(--glass-shadow);
+  }
+
+  /* Premium button styles */
+  .btn-primary {
+    @apply bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 
+           text-white font-semibold py-3 px-6 rounded-xl shadow-elegant hover:shadow-elegant-lg 
+           transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 
+           focus:ring-primary-500 focus:ring-offset-2;
+  }
+  
+  .btn-secondary {
+    @apply bg-white hover:bg-gray-50 text-gray-700 font-semibold py-3 px-6 rounded-xl 
+           border border-gray-200 shadow-elegant hover:shadow-elegant-lg transform hover:scale-105 
+           transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
+  }
+  
+  .btn-glass {
+    @apply bg-gradient-to-r from-primary-500/90 to-primary-600/90 hover:from-primary-600 hover:to-primary-700
+           text-white font-semibold py-3 px-6 rounded-xl backdrop-blur-sm border border-white/20
+           shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 
+           focus:outline-none focus:ring-2 focus:ring-primary-300 focus:ring-offset-2 focus:ring-offset-transparent;
+  }
+
+  /* Input styles */
+  .input-elegant {
+    @apply w-full px-4 py-3 bg-white border border-gray-200 rounded-xl shadow-sm 
+           focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 
+           transition-all duration-300 placeholder-gray-400 text-gray-900;
+  }
+  
+  .input-glass {
+    @apply w-full px-4 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl 
+           placeholder-gray-700 text-gray-800 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500
+           focus:bg-white/30 hover:bg-white/25 transition-all duration-300;
+  }
+
+  /* Card styles */
+  .card-elegant {
+    @apply bg-white rounded-2xl shadow-elegant border border-gray-100 p-6 
+           hover:shadow-elegant-lg transition-all duration-300;
+  }
+  
+  .card-glass {
+    @apply glass rounded-2xl p-6 hover:bg-opacity-40 transition-all duration-300;
+  }
+
+  /* Gradient text */
+  .text-gradient-primary {
+    @apply bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent;
+  }
+  
+  .text-gradient-blue {
+    @apply bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent;
+  }
+
+  /* Animated backgrounds */
+  .bg-mesh {
+    background: var(--gradient-mesh);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+  }
+  
+  .bg-gradient-animated {
+    background: linear-gradient(-45deg, #3b82f6, #1d4ed8, #0ea5e9, #0369a1);
+    background-size: 400% 400%;
+    animation: gradientShift 10s ease infinite;
+  }
+
+  /* Grid pattern background */
+  .bg-grid-pattern {
+    background-image: 
+      linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+  }
+
+  /* Floating elements */
+  .float-slow {
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  .float-fast {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  /* Loading animations */
+  .pulse-ring {
+    @apply absolute rounded-full bg-primary-400 opacity-75 animate-ping;
+  }
+  
+  .loading-dots::after {
+    content: '';
+    animation: dots 1.5s linear infinite;
+  }
+
+  /* Premium shadows */
+  .shadow-premium {
+    box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.1);
+  }
+  
+  .shadow-premium-lg {
+    box-shadow: 0 10px 28px 0 rgba(0, 0, 0, 0.15);
+  }
+  
+  .shadow-elegant {
+    box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.08);
+  }
+  
+  .shadow-elegant-lg {
+    box-shadow: 0 10px 28px 0 rgba(0, 0, 0, 0.12);
+  }
+  
+  .shadow-colored {
+    box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.15);
+  }
+  
+  .shadow-colored-lg {
+    box-shadow: 0 10px 28px 0 rgba(59, 130, 246, 0.25);
+  }
+}
+
+/* Utilities layer for custom animations */
+@layer utilities {
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+  
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+  
+  .transform-style-3d {
+    transform-style: preserve-3d;
+  }
+  
+  .animation-paused {
+    animation-play-state: paused;
+  }
+  
+  .animation-running {
+    animation-play-state: running;
+  }
+}
+
+/* Keyframes for dots loading animation */
+@keyframes dots {
+  0%, 20% { content: ''; }
+  40% { content: '.'; }
+  60% { content: '..'; }
+  80%, 100% { content: '...'; }
+}
+
+/* Responsive design helpers */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Dark mode preparation */
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #0f172a;
+    color: #f1f5f9;
+  }
+}

@@ -28,13 +28,19 @@ from rest_framework_simplejwt.views import (
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    
+    # API routes
     path("api/", include("users.urls")),
     path("api/", include("locations.urls")),
     path("api/", include("cars.urls")),
     path("api/", include("listings.urls")),
     path("api/", include("private_messages.urls")),
 
+    # JWT Authentication
     path("api/token/", CustomTokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    
+    # Django Allauth (for email verification and social auth)
+    path("auth/", include("allauth.urls")),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

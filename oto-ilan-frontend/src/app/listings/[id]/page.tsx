@@ -77,7 +77,7 @@ export default function ListingDetailPage() {
   const [loading, setLoading] = useState(true);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState('details');
+  const [activeTab, setActiveTab] = useState('specs');
   const [isFavorite, setIsFavorite] = useState(false);
 
   useEffect(() => {
@@ -218,7 +218,7 @@ export default function ListingDetailPage() {
             <div className="relative bg-white rounded-2xl overflow-hidden shadow-2xl mb-4 group">
               {listing.images.length > 0 ? (
                 <>
-                  <div className="relative aspect-[4/3]">
+                  <div className="relative aspect-[16/9]">
                     <img
                       src={listing.images[activeImageIndex]?.original_url || '/placeholder-car.jpg'}
                       alt={listing.title}
@@ -258,7 +258,7 @@ export default function ListingDetailPage() {
                   </div>
                 </>
               ) : (
-                <div className="aspect-[4/3] bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
+                <div className="aspect-[16/9] bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
                   <div className="text-center text-gray-500">
                     <TruckIcon className="h-16 w-16 mx-auto mb-2" />
                     <p>Resim bulunmuyor</p>
@@ -274,7 +274,7 @@ export default function ListingDetailPage() {
                   <button
                     key={image.id}
                     onClick={() => setActiveImageIndex(index)}
-                    className={`relative aspect-[4/3] rounded-lg overflow-hidden transition-all duration-300 ${
+                    className={`relative aspect-[16/9] rounded-lg overflow-hidden transition-all duration-300 ${
                       index === activeImageIndex
                         ? 'ring-2 ring-blue-500 shadow-lg'
                         : 'hover:shadow-md'
@@ -295,16 +295,6 @@ export default function ListingDetailPage() {
               <div className="border-b border-slate-300">
                 <nav className="flex space-x-8">
                   <button
-                    onClick={() => setActiveTab('details')}
-                    className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-                      activeTab === 'details'
-                        ? 'border-blue-500 text-blue-600'
-                        : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
-                    }`}
-                  >
-                    İlan Detayları
-                  </button>
-                  <button
                     onClick={() => setActiveTab('specs')}
                     className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
                       activeTab === 'specs'
@@ -312,36 +302,22 @@ export default function ListingDetailPage() {
                         : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
                     }`}
                   >
-                    Teknik Özellikler
+                    Teknik Bilgiler
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('details')}
+                    className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                      activeTab === 'details'
+                        ? 'border-blue-500 text-blue-600'
+                        : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+                    }`}
+                  >
+                    Açıklama
                   </button>
                 </nav>
               </div>
 
               <div className="py-6">
-                {activeTab === 'details' && (
-                  <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-6 shadow-xl">
-                    <h3 className="text-xl font-bold text-slate-800 mb-4">Açıklama</h3>
-                    <div className="prose prose-slate max-w-none">
-                      <p className="text-slate-700 leading-relaxed whitespace-pre-wrap">
-                        {listing.description}
-                      </p>
-                    </div>
-                    
-                    <div className="mt-6 pt-6 border-t border-slate-200">
-                      <div className="flex items-center text-sm text-slate-600">
-                        <ClockIcon className="h-4 w-4 mr-2" />
-                        <span>İlan Tarihi: {formatDate(listing.created_at)}</span>
-                        {listing.updated_at !== listing.created_at && (
-                          <>
-                            <span className="mx-3">•</span>
-                            <span>Güncelleme: {formatDate(listing.updated_at)}</span>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                )}
-
                 {activeTab === 'specs' && (
                   <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-6 shadow-xl">
                     <h3 className="text-xl font-bold text-slate-800 mb-6">Teknik Bilgiler</h3>
@@ -433,6 +409,30 @@ export default function ListingDetailPage() {
                           </div>
                           <span className="font-semibold text-slate-800">{listing.car.engine_power} HP</span>
                         </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === 'details' && (
+                  <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-6 shadow-xl">
+                    <h3 className="text-xl font-bold text-slate-800 mb-4">Açıklama</h3>
+                    <div className="prose prose-slate max-w-none">
+                      <p className="text-slate-700 leading-relaxed whitespace-pre-wrap">
+                        {listing.description}
+                      </p>
+                    </div>
+                    
+                    <div className="mt-6 pt-6 border-t border-slate-200">
+                      <div className="flex items-center text-sm text-slate-600">
+                        <ClockIcon className="h-4 w-4 mr-2" />
+                        <span>İlan Tarihi: {formatDate(listing.created_at)}</span>
+                        {listing.updated_at !== listing.created_at && (
+                          <>
+                            <span className="mx-3">•</span>
+                            <span>Güncelleme: {formatDate(listing.updated_at)}</span>
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>

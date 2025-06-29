@@ -81,10 +81,13 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "first_name",
             "last_name", 
             "phone_number",
+            "profile_photo",
+            "bio",
             "is_seller",
             "date_joined",
+            "updated_at",
         ]
-        read_only_fields = ["id", "date_joined"]
+        read_only_fields = ["id", "date_joined", "updated_at"]
     
     def validate_email(self, value):
         user = self.instance

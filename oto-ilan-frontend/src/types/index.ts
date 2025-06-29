@@ -6,9 +6,12 @@ export interface User {
   first_name?: string
   last_name?: string
   phone_number?: string
+  profile_photo?: string
+  bio?: string
   is_seller: boolean
   is_email_verified: boolean
   date_joined: string
+  updated_at?: string
 }
 
 export interface UserRegistration {

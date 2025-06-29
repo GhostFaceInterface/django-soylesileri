@@ -3,18 +3,19 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/lib/stores/auth'
-import { useForm } from 'react-hook-form'
+import { useForm, useController } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { GoogleLogin } from '@react-oauth/google'
 import { GoogleOAuthProvider } from '@react-oauth/google'
 import Link from 'next/link'
-import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
+import { EyeIcon, EyeSlashIcon, CheckIcon } from '@heroicons/react/24/outline'
 import toast from 'react-hot-toast'
 
 const loginSchema = z.object({
   email: z.string().email('Geçerli bir email adresi giriniz'),
   password: z.string().min(1, 'Şifre alanı zorunludur'),
+  rememberMe: z.boolean().optional(),
 })
 
 type LoginForm = z.infer<typeof loginSchema>
@@ -32,9 +33,24 @@ function LoginPageContent() {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+      rememberMe: false,
+    },
+  })
+
+  // Remember Me checkbox controller
+  const {
+    field: rememberMeField,
+  } = useController({
+    name: 'rememberMe',
+    control,
+    defaultValue: false,
   })
 
   useEffect(() => {
@@ -45,8 +61,14 @@ function LoginPageContent() {
   const onSubmit = async (data: LoginForm) => {
     try {
       clearError()
-      console.log('Login attempt:', { email: data.email, password: data.password })
-      await emailLogin(data.email, data.password)
+      console.log('Login attempt:', { 
+        email: data.email, 
+        password: data.password, 
+        rememberMe: data.rememberMe 
+      })
+      
+      await emailLogin(data.email, data.password, data.rememberMe)
+      
       toast.success('Giriş başarılı! Hoş geldiniz 🎉', {
         duration: 4000,
         style: {
@@ -183,14 +205,31 @@ function LoginPageContent() {
         <div className={`flex items-center justify-between transition-all duration-1000 ${
           isAnimated ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
         }`} style={{ transitionDelay: '400ms' }}>
-          <label className="flex items-center space-x-3 cursor-pointer group">
-            <input type="checkbox" className="sr-only" />
+          <label 
+            className="flex items-center space-x-3 cursor-pointer group" 
+            onClick={() => rememberMeField.onChange(!rememberMeField.value)}
+          >
+            <input 
+              type="checkbox" 
+              className="sr-only" 
+              name={rememberMeField.name}
+              checked={rememberMeField.value || false}
+              onChange={(e) => rememberMeField.onChange(e.target.checked)}
+              onBlur={rememberMeField.onBlur}
+              ref={rememberMeField.ref}
+            />
             <div className="relative">
-              <div className="w-5 h-5 bg-gray-200 border border-gray-300 rounded group-hover:bg-gray-100 transition-all duration-200"></div>
+              <div className={`w-6 h-6 border-2 rounded-md transition-all duration-300 ${
+                rememberMeField.value 
+                  ? 'bg-blue-600 border-blue-600 shadow-lg shadow-blue-600/30' 
+                  : 'bg-white border-gray-300 group-hover:border-blue-400 group-hover:shadow-md'
+              }`}></div>
               <div className="absolute inset-0 flex items-center justify-center">
-                <svg className="w-3 h-3 text-primary-600 opacity-0 group-hover:opacity-100 transition-opacity duration-200" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
+                <CheckIcon className={`w-4 h-4 transition-all duration-300 ${
+                  rememberMeField.value 
+                    ? 'text-white opacity-100 scale-100' 
+                    : 'text-blue-600 opacity-0 scale-75'
+                }`} />
               </div>
             </div>
             <span className="text-gray-600 text-sm font-medium group-hover:text-gray-800 transition-colors duration-200">
@@ -201,7 +240,7 @@ function LoginPageContent() {
           <button
             type="button"
             onClick={() => setShowForgotPassword(true)}
-            className="text-primary-300 hover:text-primary-200 text-sm font-semibold transition-colors duration-200 hover:underline"
+            className="text-blue-600 hover:text-blue-700 text-sm font-semibold transition-colors duration-200 hover:underline"
           >
             Şifremi unuttum
           </button>

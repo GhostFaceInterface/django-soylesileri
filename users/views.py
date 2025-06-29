@@ -222,30 +222,26 @@ class UserViewSet(viewsets.ModelViewSet):
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=False, methods=['get'])
+    @action(detail=False, methods=['get', 'put', 'patch'])
     def profile(self, request):
         """
-        Kullanıcının kendi profil bilgilerini getir
-        GET /api/users/profile/
+        Kullanıcının kendi profil bilgilerini getir veya güncelle
+        GET /api/users/profile/ - Profil bilgilerini getir
+        PUT/PATCH /api/users/profile/ - Profil bilgilerini güncelle
         """
-        serializer = UserProfileSerializer(request.user)
-        return Response(serializer.data)
-
-    @action(detail=False, methods=['put', 'patch'])
-    def update_profile(self, request):
-        """
-        Kullanıcının kendi profil bilgilerini güncelle
-        PUT/PATCH /api/users/update-profile/
-        """
-        serializer = UserProfileSerializer(
-            request.user, 
-            data=request.data, 
-            partial=request.method == 'PATCH'
-        )
-        if serializer.is_valid():
-            serializer.save()
+        if request.method == 'GET':
+            serializer = UserProfileSerializer(request.user)
             return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            serializer = UserProfileSerializer(
+                request.user, 
+                data=request.data, 
+                partial=request.method == 'PATCH'
+            )
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False, methods=['get'])
     def dashboard(self, request):

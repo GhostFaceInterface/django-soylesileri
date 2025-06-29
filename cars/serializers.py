@@ -14,10 +14,10 @@ class CarModelSerializer(serializers.ModelSerializer):
 
 
 class CarVariantSerializer(serializers.ModelSerializer):
-    model = CarModelSerializer(read_only=True)
+    car = CarModelSerializer(read_only=True)
     class Meta:
         model = CarVariant
-        fields = ['id', 'name', 'model']
+        fields = ['id', 'name', 'car']
 
 class CarTrimSerializer(serializers.ModelSerializer):
     variant = CarVariantSerializer(read_only=True)

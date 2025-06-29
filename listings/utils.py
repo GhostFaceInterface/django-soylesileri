@@ -10,7 +10,7 @@ logger = logging.getLogger("custom")
 
 class ImageProcessor:
     """
-    Resim işleme için yardımcı sınıf
+    4:3 formatında resim işleme için yardımcı sınıf
     
     Python Syntax Açıklaması:
     - class: Sınıf tanımlama
@@ -21,15 +21,13 @@ class ImageProcessor:
     ALLOWED_FORMATS = ['JPEG', 'PNG', 'WEBP', "JPG"]
     MAX_FILE_SIZE = 5 * 1024 * 1024  # 5 MB
     
-    # 🆕 TEK FORMAT: 16:9 ASPECT RATIO
-    ASPECT_RATIO = 16 / 9  # 1.777...
+    # 🆕 TEK FORMAT: 4:3 ASPECT RATIO
+    ASPECT_RATIO = 4 / 3  # 1.333...
     
-    # 🆕 16:9 BOYUTLARI
+    # 🆕 4:3 BOYUTLARI - Sadece original ve thumbnail
     SIZES = {
-        "original": (1920, 1080),    # Full HD 16:9
-        "large": (1280, 720),        # HD 16:9  
-        "medium": (854, 480),        # 480p 16:9
-        "thumbnail": (320, 180),     # Küçük 16:9
+        "original": (1200, 900),     # 4:3 format - Ana resim
+        "thumbnail": (320, 240),     # 4:3 format - Küçük resim
     }
 
     @staticmethod
@@ -42,8 +40,8 @@ class ImageProcessor:
             if image.format not in ImageProcessor.ALLOWED_FORMATS:
                 raise ValueError(f"Desteklenmeyen format. Sadece {', '.join(ImageProcessor.ALLOWED_FORMATS)} desteklenir.")
             
-            if image.size[0] < 320 or image.size[1] < 180:
-                raise ValueError("Resim boyutu çok küçük. En az 320x180 piksel olmalıdır.")
+            if image.size[0] < 320 or image.size[1] < 240:
+                raise ValueError("Resim boyutu çok küçük. En az 320x240 piksel olmalıdır.")
             
             return True
         
@@ -59,13 +57,13 @@ class ImageProcessor:
         return f"{clean_name}_{unique_id}{ext.lower()}"
     
     @staticmethod
-    def fit_to_16_9(image, target_size):
+    def fit_to_4_3(image, target_size):
         """
-        Resmi 16:9 formatına sığdır - ASPECT RATIO BOZULMADAN
+        Resmi 4:3 formatına sığdır - ASPECT RATIO BOZULMADAN
         
         Mantık:
         1. Resmin en boy oranını koru
-        2. 16:9 çerçeveye sığdır
+        2. 4:3 çerçeveye sığdır
         3. Boş yerleri siyah dolgularla doldur (letterbox/pillarbox)
         """
         target_width, target_height = target_size
@@ -73,22 +71,22 @@ class ImageProcessor:
         
         # Orijinal aspect ratio
         original_ratio = original_width / original_height
-        target_ratio = target_width / target_height  # 16:9 = 1.777...
+        target_ratio = target_width / target_height  # 4:3 = 1.333...
         
-        # Resmi 16:9 çerçeveye sığdırmak için boyutları hesapla
+        # Resmi 4:3 çerçeveye sığdırmak için boyutları hesapla
         if original_ratio > target_ratio:
-            # Resim çok geniş - genişliği 16:9'a sığdır, yükseklikte siyah şerit
+            # Resim çok geniş - genişliği 4:3'e sığdır, yükseklikte siyah şerit
             new_width = target_width
             new_height = int(target_width / original_ratio)
         else:
-            # Resim çok uzun - yüksekliği 16:9'a sığdır, genişlikte siyah şerit  
+            # Resim çok uzun - yüksekliği 4:3'e sığdır, genişlikte siyah şerit  
             new_height = target_height
             new_width = int(target_height * original_ratio)
         
         # Resmi yeniden boyutlandır (aspect ratio korunur)
         resized_image = image.resize((new_width, new_height), Image.LANCZOS)
         
-        # 16:9 siyah background oluştur
+        # 4:3 siyah background oluştur
         final_image = Image.new('RGB', (target_width, target_height), (0, 0, 0))
         
         # Resmi ortaya yapıştır
@@ -98,12 +96,10 @@ class ImageProcessor:
         
         return final_image
 
-
-
     @staticmethod
     def process_image(image_file, size_name="original"):
         """
-        Resmi işle ve 16:9 formatına uyarla
+        Resmi işle ve 4:3 formatına uyarla
         """
         try:
             image = Image.open(image_file)
@@ -118,8 +114,8 @@ class ImageProcessor:
             if not target_size:
                 raise ValueError(f"Geçersiz boyut: {size_name}")
             
-            # 16:9 formatına uyarla
-            processed_image = ImageProcessor.fit_to_16_9(image, target_size)
+            # 4:3 formatına uyarla
+            processed_image = ImageProcessor.fit_to_4_3(image, target_size)
             
             # BytesIO'ya kaydet
             from io import BytesIO
@@ -154,7 +150,7 @@ class ImageProcessor:
                     )
                 
                 thumbnails[size_name] = file_path
-                logger.info(f"16:9 Resim oluşturuldu: {size_name} ({ImageProcessor.SIZES[size_name][0]}x{ImageProcessor.SIZES[size_name][1]}) - {file_path}")
+                logger.info(f"4:3 Resim oluşturuldu: {size_name} ({ImageProcessor.SIZES[size_name][0]}x{ImageProcessor.SIZES[size_name][1]}) - {file_path}")
                 
             except Exception as e:
                 logger.error(f"Resim oluşturma hatası ({size_name}): {e}")

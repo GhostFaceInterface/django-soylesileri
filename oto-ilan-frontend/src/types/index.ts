@@ -25,9 +25,31 @@ export interface UserRegistration {
   is_seller?: boolean
 }
 
+export interface RegisterData {
+  username: string
+  email: string
+  password: string
+  password_confirm: string
+  first_name?: string
+  last_name?: string
+  phone_number?: string
+  is_seller?: boolean
+}
+
 export interface LoginCredentials {
   email: string
   password: string
+}
+
+export interface LoginData {
+  username: string
+  password: string
+}
+
+export interface EmailLoginData {
+  email: string
+  password: string
+  rememberMe?: boolean
 }
 
 export interface AuthTokens {
@@ -55,7 +77,7 @@ export interface CarModel {
 export interface CarVariant {
   id: number
   name: string
-  model: CarModel
+  car: CarModel
 }
 
 export interface CarTrim {
@@ -93,8 +115,6 @@ export interface ListingImage {
   order: number
   is_primary: boolean
   thumbnail_url: string
-  medium_url: string
-  large_url: string
   original_url: string
   file_size?: number
   file_size_mb?: number

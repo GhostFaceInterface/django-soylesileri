@@ -4,18 +4,18 @@ from users.serializers import UserSerializer
 from cars.serializers import CarSerializer
 from locations.serializers import CitySerializer
 from .utils import ImageProcessor
+from cars.models import Car, CarBrand, CarModel, CarVariant, CarTrim
+from locations.models import City
 
 
 
 class ListingImageSerializer(serializers.ModelSerializer):
     """
-    16:9 formatındaki resim serializer'ı
+    4:3 formatındaki resim serializer'ı
     """
-    # Farklı boyutlardaki 16:9 resim URL'leri
-    thumbnail_url = serializers.SerializerMethodField()  # 320x180
-    medium_url = serializers.SerializerMethodField()     # 854x480
-    large_url = serializers.SerializerMethodField()      # 1280x720
-    original_url = serializers.SerializerMethodField()   # 1920x1080
+    # 4:3 resim URL'leri - sadece thumbnail ve original
+    thumbnail_url = serializers.SerializerMethodField()  # 320x240
+    original_url = serializers.SerializerMethodField()   # 1200x900
 
     file_size_mb = serializers.SerializerMethodField()
     dimensions = serializers.SerializerMethodField()
@@ -24,19 +24,13 @@ class ListingImageSerializer(serializers.ModelSerializer):
         model = ListingImage
         fields = [
             'id', 'listing', 'image', 'order', 'is_primary',
-            'thumbnail_url', 'medium_url', 'large_url', 'original_url',
+            'thumbnail_url', 'original_url',
             'file_size', 'file_size_mb', 'dimensions', 'uploaded_at'
         ]
         read_only_fields = ['file_size', 'width', 'height']
 
-    def get_thumbnail_url(self,obj):
+    def get_thumbnail_url(self, obj):
         return obj.get_image_url(size='thumbnail')
-    
-    def get_medium_url(self, obj):
-        return obj.get_image_url(size='medium')
-    
-    def get_large_url(self, obj):
-        return obj.get_image_url(size='large')
     
     def get_original_url(self, obj):
         return obj.get_image_url(size='original')
@@ -64,43 +58,173 @@ class BulkImageUploadSerializer(serializers.Serializer):
         max_length=10,  # Max 10 images per upload
         min_length=1,  # At least 1 image required
     )
-
+    
     def validate_listing_id(self, value):
         try:
-            listing=Listing.objects.get(id=value)
-            request = self.context.get("request")
-            if request and listing.user !=request.user:
-                raise serializers.ValidationError("You do not have permission to upload images for this listing.")
+            listing = Listing.objects.get(id=value)
+            # Check if the user owns this listing
+            request = self.context.get('request')
+            if request and listing.user != request.user:
+                raise serializers.ValidationError("You don't have permission to upload images for this listing.")
             return value
         except Listing.DoesNotExist:
-            raise serializers.ValidationError("Listing does not exist.")
-        
-    def validate_images(self, value):
-        for image in value:
-            try: 
-                ImageProcessor.validate_image(image)
-            except Exception as e:
-                raise serializers.ValidationError(f"Image validation failed: {str(e)}")
-        return value
+            raise serializers.ValidationError("İlan bulunamadı.")
     
-
-    def create (self, validated_data):
-        listing_id = validated_data["listing_id"]
-        images = validated_data["images"]
+    def create(self, validated_data):
+        listing_id = validated_data['listing_id']
+        images = validated_data['images']
         listing = Listing.objects.get(id=listing_id)
-
+        
         created_images = []
-        for index, image in enumerate(images):
+        for image in images:
             listing_image = ListingImage.objects.create(
                 listing=listing,
-                image=image,
-                order=index,
-                is_primary=(index==0 and not listing.images.filter(is_primary=True).exists())
+                image=image
             )
             created_images.append(listing_image)
-
+        
         return created_images
+
+# NEW: İlan oluşturma için özel serializer
+class CreateListingSerializer(serializers.ModelSerializer):
+    # Araç bilgileri
+    brand_id = serializers.IntegerField(write_only=True)
+    model_id = serializers.IntegerField(write_only=True)
+    variant_id = serializers.IntegerField(write_only=True, required=False, allow_null=True)
+    trim_id = serializers.IntegerField(write_only=True, required=False, allow_null=True)
     
+    # Araç detayları
+    year = serializers.IntegerField(write_only=True)
+    mileage = serializers.IntegerField(write_only=True)
+    fuel_type = serializers.ChoiceField(choices=Car.FUEL_CHOICES, write_only=True)
+    transmission = serializers.ChoiceField(choices=Car.TRANSMISSION_CHOICES, write_only=True)
+    color = serializers.CharField(max_length=50, write_only=True)
+    body_type = serializers.CharField(max_length=50, write_only=True)
+    engine_power = serializers.IntegerField(write_only=True)
+    
+    # Şehir
+    city_id = serializers.IntegerField(write_only=True)
+    
+    # Response için read-only alanlar
+    car = CarSerializer(read_only=True)
+    city = CitySerializer(read_only=True)
+    
+    class Meta:
+        model = Listing
+        fields = [
+            'id', 'title', 'description', 'price', 'is_active',
+            'brand_id', 'model_id', 'variant_id', 'trim_id',
+            'year', 'mileage', 'fuel_type', 'transmission', 'color', 'body_type', 'engine_power',
+            'city_id', 'car', 'city', 'created_at', 'updated_at'
+        ]
+        read_only_fields = ['id', 'created_at', 'updated_at']
+    
+    def validate_brand_id(self, value):
+        if not CarBrand.objects.filter(id=value).exists():
+            raise serializers.ValidationError("Geçersiz marka seçimi.")
+        return value
+    
+    def validate_model_id(self, value):
+        if not CarModel.objects.filter(id=value).exists():
+            raise serializers.ValidationError("Geçersiz model seçimi.")
+        return value
+    
+    def validate_variant_id(self, value):
+        if value and not CarVariant.objects.filter(id=value).exists():
+            raise serializers.ValidationError("Geçersiz varyant seçimi.")
+        return value
+    
+    def validate_trim_id(self, value):
+        if value and not CarTrim.objects.filter(id=value).exists():
+            raise serializers.ValidationError("Geçersiz donanım seçimi.")
+        return value
+    
+    def validate_city_id(self, value):
+        if not City.objects.filter(id=value).exists():
+            raise serializers.ValidationError("Geçersiz şehir seçimi.")
+        return value
+    
+    def validate_year(self, value):
+        if value < 1885 or value > 2025:
+            raise serializers.ValidationError("Yıl 1885-2025 arasında olmalıdır.")
+        return value
+    
+    def validate_mileage(self, value):
+        if value < 0:
+            raise serializers.ValidationError("Kilometre negatif olamaz.")
+        return value
+    
+    def validate_engine_power(self, value):
+        if value <= 0:
+            raise serializers.ValidationError("Motor gücü en az 1 HP olmalıdır.")
+        return value
+    
+    def validate_price(self, value):
+        if value <= 0:
+            raise serializers.ValidationError("Fiyat 0'dan büyük olmalıdır.")
+        return value
+        
+    def validate(self, attrs):
+        # Model, brand ile uyumlu mu?
+        model = CarModel.objects.filter(id=attrs['model_id']).first()
+        if model and model.brand_id != attrs['brand_id']:
+            raise serializers.ValidationError("Seçilen model, seçilen marka ile uyumlu değil.")
+        
+        # Variant, model ile uyumlu mu?
+        variant_id = attrs.get('variant_id')
+        if variant_id:
+            variant = CarVariant.objects.filter(id=variant_id).first()
+            if variant and variant.car_id != attrs['model_id']:
+                raise serializers.ValidationError("Seçilen varyant, seçilen model ile uyumlu değil.")
+        
+        # Trim, variant ile uyumlu mu?
+        trim_id = attrs.get('trim_id')
+        if trim_id and variant_id:
+            trim = CarTrim.objects.filter(id=trim_id).first()
+            if trim and trim.variant_id != variant_id:
+                raise serializers.ValidationError("Seçilen donanım, seçilen varyant ile uyumlu değil.")
+        
+        return attrs
+    
+    def create(self, validated_data):
+        # Araç bilgilerini al
+        brand = CarBrand.objects.get(id=validated_data.pop('brand_id'))
+        model = CarModel.objects.get(id=validated_data.pop('model_id'))
+        variant = None
+        trim = None
+        
+        variant_id = validated_data.pop('variant_id', None)
+        if variant_id:
+            variant = CarVariant.objects.get(id=variant_id)
+        
+        trim_id = validated_data.pop('trim_id', None)
+        if trim_id:
+            trim = CarTrim.objects.get(id=trim_id)
+        
+        city = City.objects.get(id=validated_data.pop('city_id'))
+        
+        # Car objesi oluştur
+        car_data = {
+            'brand': brand,
+            'model': model,
+            'variant': variant,
+            'trim': trim,
+            'year': validated_data.pop('year'),
+            'mileage': validated_data.pop('mileage'),
+            'fuel_type': validated_data.pop('fuel_type'),
+            'transmission': validated_data.pop('transmission'),
+            'color': validated_data.pop('color'),
+            'body_type': validated_data.pop('body_type'),
+            'engine_power': validated_data.pop('engine_power'),
+        }
+        
+        car = Car.objects.create(**car_data)
+        
+        # Listing oluştur
+        validated_data['car'] = car
+        validated_data['city'] = city
+        
+        return super().create(validated_data)
 
 class ListingSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)

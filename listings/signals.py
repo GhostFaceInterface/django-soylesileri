@@ -1,4 +1,3 @@
-
 """
 Bu dosya Django signal handlers kullanarak ilanlar ve ilan resimleri için loglama işlemlerini yönetir.
 
@@ -142,14 +141,10 @@ def create_thumbnail_after_save(sender, instance, created, **kwargs):
             update_fields = {}
             if "thumbnail" in thumbnails:
                 update_fields['thumbnail'] = thumbnails['thumbnail']
-            if "medium" in thumbnails:
-                update_fields['medium_image'] = thumbnails['medium']
-            if "large" in thumbnails:
-                update_fields['large_image'] = thumbnails['large']
             
             if update_fields:
                 ListingImage.objects.filter(pk=instance.pk).update(**update_fields)
-                logger.info(f"Thumbnail ve diğer boyutlar oluşturuldu: {instance.image.name}")
+                logger.info(f"4:3 Thumbnail oluşturuldu: {instance.image.name}")
         except Exception as e:
             logger.error(f"Thumbnail oluşturma hatası: {e}")
 

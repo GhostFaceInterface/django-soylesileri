@@ -37,7 +37,7 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    # Default: IsAuthenticatedOrReadOnly (READ için auth gerekmez, CUD için gerekir)
+    permission_classes = [AllowAny]  # Default permission - will be overridden by action-specific permissions
 
     def get_permissions(self):
         """
@@ -49,6 +49,9 @@ class UserViewSet(viewsets.ModelViewSet):
         elif self.action in ['list', 'retrieve']:
             # READ operations - anyone can access (for browsing listings)
             permission_classes = [AllowAny]
+        elif self.action in ['dashboard', 'profile', 'my_listings']:
+            # User-specific endpoints - authentication required
+            permission_classes = [IsAuthenticated]
         else:
             # UPDATE, DELETE and other operations - authentication required
             permission_classes = [IsAuthenticated]
@@ -67,27 +70,26 @@ class UserViewSet(viewsets.ModelViewSet):
             return PasswordResetSerializer
         return UserSerializer
 
+    def create(self, request, *args, **kwargs):
+        """
+        Override create to ensure AllowAny permission for registration
+        """
+        return super().create(request, *args, **kwargs)
+
     def perform_create(self, serializer):
         user = serializer.save()
         send_welcome_email(user.email)
 
-    @action(detail=False, methods=['post'])
+    @action(detail=False, methods=['post'], permission_classes=[AllowAny])
     def email_login(self, request):
         """
         Email ile giriş yap
-        POST /api/users/email-login/
+        POST /api/users/email_login/
         """
-        print(f"DEBUG: email_login called with data: {request.data}")
-        print(f"DEBUG: user authenticated: {request.user.is_authenticated}")
-        print(f"DEBUG: permissions: {[p.__class__.__name__ for p in self.get_permissions()]}")
-        
         serializer = self.get_serializer(data=request.data)
-        print(f"DEBUG: serializer created: {serializer}")
         
         if serializer.is_valid():
-            print("DEBUG: serializer is valid")
             user = serializer.validated_data['user']
-            print(f"DEBUG: user found: {user.email}")
             
             # Generate JWT tokens
             refresh = RefreshToken.for_user(user)
@@ -98,10 +100,9 @@ class UserViewSet(viewsets.ModelViewSet):
                 'user': UserSerializer(user).data
             }, status=status.HTTP_200_OK)
         else:
-            print(f"DEBUG: serializer errors: {serializer.errors}")
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=False, methods=['post'])
+    @action(detail=False, methods=['post'], permission_classes=[AllowAny])
     def google_oauth(self, request):
         """
         Google OAuth ile giriş yap
@@ -182,7 +183,7 @@ class UserViewSet(viewsets.ModelViewSet):
         except Exception:
             return None
 
-    @action(detail=False, methods=['post'])
+    @action(detail=False, methods=['post'], permission_classes=[AllowAny])
     def password_reset(self, request):
         """
         Şifre sıfırlama maili gönder
@@ -243,48 +244,42 @@ class UserViewSet(viewsets.ModelViewSet):
                 return Response(serializer.data)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=False, methods=['get'])
+    @action(detail=False, methods=['GET'])
     def dashboard(self, request):
         """
-        Kullanıcı dashboard bilgilerini getir
+        Kullanıcı dashboard bilgileri
         GET /api/users/dashboard/
         """
+        if not request.user.is_authenticated:
+            return Response({'error': 'Authentication required'}, 
+                          status=status.HTTP_401_UNAUTHORIZED)
+        
         user = request.user
         
-        # Kullanıcının istatistikleri
+        # Kullanıcının ilanları
         from listings.models import Listing
-        from private_messages.models import Message
+        listings = Listing.objects.filter(
+            user=user, 
+            is_deleted=False
+        ).select_related('car', 'location')
         
+        # Mesajlar
+        from private_messages.models import Message
+        unread_messages = Message.objects.filter(
+            recipient=user,
+            is_read=False
+        ).count()
+        
+        # İstatistikler
         stats = {
-            'total_listings': Listing.objects.filter(user=user, is_deleted=False).count(),
-            'active_listings': Listing.objects.filter(user=user, is_active=True, is_deleted=False).count(),
-            'inactive_listings': Listing.objects.filter(user=user, is_active=False, is_deleted=False).count(),
-            'total_messages_sent': Message.objects.filter(sender=user).count(),
-            'total_messages_received': Message.objects.filter(receiver=user).count(),
-            'unread_messages': Message.objects.filter(receiver=user, is_read=False).count(),
+            'total_listings': listings.count(),
+            'active_listings': listings.filter(is_active=True).count(),
+            'unread_messages': unread_messages,
         }
         
-        # Son ilanlar
-        recent_listings = Listing.objects.filter(
-            user=user, is_deleted=False
-        ).order_by('-created_at')[:5]
-        
-        from listings.serializers import ListingSerializer
-        recent_listings_data = ListingSerializer(recent_listings, many=True, context={'request': request}).data
-        
-        # Son mesajlar
-        recent_messages = Message.objects.filter(
-            Q(sender=user) | Q(receiver=user)
-        ).order_by('-timestamp')[:5]
-        
-        from private_messages.serializers import MessageSerializer
-        recent_messages_data = MessageSerializer(recent_messages, many=True).data
-        
         return Response({
-            'user': UserProfileSerializer(user).data,
+            'user': UserSerializer(user).data,
             'stats': stats,
-            'recent_listings': recent_listings_data,
-            'recent_messages': recent_messages_data
         })
 
     @action(detail=False, methods=['get'])

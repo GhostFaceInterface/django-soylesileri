@@ -266,7 +266,7 @@ class UserViewSet(viewsets.ModelViewSet):
         # Mesajlar
         from private_messages.models import Message
         unread_messages = Message.objects.filter(
-            recipient=user,
+            receiver=user,
             is_read=False
         ).count()
         

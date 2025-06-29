@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/lib/stores/auth'
-import { useForm } from 'react-hook-form'
+import { useForm, useController } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { GoogleLogin } from '@react-oauth/google'
@@ -27,7 +27,6 @@ const registerSchema = z.object({
     .regex(/[0-9]/, 'Şifre en az bir rakam içermeli'),
   password_confirm: z.string(),
   phone_number: z.string().optional(),
-  is_seller: z.boolean().optional().default(false),
   terms: z.boolean().refine(val => val === true, 'Kullanım koşullarını kabul etmelisiniz'),
 }).refine((data) => data.password === data.password_confirm, {
   message: "Şifreler eşleşmiyor",
@@ -42,7 +41,6 @@ type RegisterForm = {
   password: string
   password_confirm: string
   phone_number?: string
-  is_seller?: boolean
   terms: boolean
 }
 
@@ -60,12 +58,20 @@ function RegisterPageContent() {
     register,
     handleSubmit,
     watch,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<RegisterForm>({
     resolver: zodResolver(registerSchema),
-    defaultValues: {
-      is_seller: false,
-    },
+  })
+
+  // Terms checkbox controller
+  const {
+    field: termsField,
+    fieldState: termsFieldState,
+  } = useController({
+    name: 'terms',
+    control,
+    defaultValue: false,
   })
 
   const password = watch('password')
@@ -77,6 +83,11 @@ function RegisterPageContent() {
 
   useEffect(() => {
     // Calculate password strength
+    if (!password) {
+      setPasswordStrength(0)
+      return
+    }
+    
     let strength = 0
     if (password.length >= 8) strength += 1
     if (/[A-Z]/.test(password)) strength += 1
@@ -131,12 +142,12 @@ function RegisterPageContent() {
         isAnimated ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
       }`}>
         <div className="relative inline-block">
-          <h1 className="text-3xl font-bold text-white font-display">
+          <h1 className="text-3xl font-bold text-gray-800 font-display">
             Hesap Oluşturun
           </h1>
-          <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-accent-400 to-transparent"></div>
+          <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-accent-500 to-transparent"></div>
         </div>
-        <p className="text-white text-opacity-80 text-lg leading-relaxed">
+        <p className="text-gray-600 text-lg leading-relaxed">
           Premium araç pazarımıza katılın ve ayrıcalıklı deneyimi yaşayın
         </p>
       </div>
@@ -149,7 +160,7 @@ function RegisterPageContent() {
         }`} style={{ transitionDelay: '200ms' }}>
           {/* First Name */}
           <div className="space-y-2">
-            <label className="block text-white text-opacity-90 text-sm font-semibold tracking-wide">
+            <label className="block text-gray-700 text-sm font-semibold tracking-wide">
               Ad
             </label>
             <div className="relative group">
@@ -162,13 +173,13 @@ function RegisterPageContent() {
               <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary-500 to-accent-500 opacity-0 group-hover:opacity-10 transition-opacity duration-300 pointer-events-none"></div>
             </div>
             {errors.first_name && (
-              <p className="text-red-300 text-sm font-medium animate-fade-in-up">{errors.first_name.message}</p>
+              <p className="text-red-500 text-sm font-medium animate-fade-in-up">{errors.first_name.message}</p>
             )}
           </div>
 
           {/* Last Name */}
           <div className="space-y-2">
-            <label className="block text-white text-opacity-90 text-sm font-semibold tracking-wide">
+            <label className="block text-gray-700 text-sm font-semibold tracking-wide">
               Soyad
             </label>
             <div className="relative group">
@@ -181,7 +192,7 @@ function RegisterPageContent() {
               <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary-500 to-accent-500 opacity-0 group-hover:opacity-10 transition-opacity duration-300 pointer-events-none"></div>
             </div>
             {errors.last_name && (
-              <p className="text-red-300 text-sm font-medium animate-fade-in-up">{errors.last_name.message}</p>
+              <p className="text-red-500 text-sm font-medium animate-fade-in-up">{errors.last_name.message}</p>
             )}
           </div>
         </div>
@@ -192,7 +203,7 @@ function RegisterPageContent() {
         }`} style={{ transitionDelay: '300ms' }}>
           {/* Username */}
           <div className="space-y-2">
-            <label className="block text-white text-opacity-90 text-sm font-semibold tracking-wide">
+            <label className="block text-gray-700 text-sm font-semibold tracking-wide">
               Kullanıcı Adı
             </label>
             <div className="relative group">
@@ -205,13 +216,13 @@ function RegisterPageContent() {
               <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary-500 to-accent-500 opacity-0 group-hover:opacity-10 transition-opacity duration-300 pointer-events-none"></div>
             </div>
             {errors.username && (
-              <p className="text-red-300 text-sm font-medium animate-fade-in-up">{errors.username.message}</p>
+              <p className="text-red-500 text-sm font-medium animate-fade-in-up">{errors.username.message}</p>
             )}
           </div>
 
           {/* Email */}
           <div className="space-y-2">
-            <label className="block text-white text-opacity-90 text-sm font-semibold tracking-wide">
+            <label className="block text-gray-700 text-sm font-semibold tracking-wide">
               Email Adresi
             </label>
             <div className="relative group">
@@ -224,7 +235,7 @@ function RegisterPageContent() {
               <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary-500 to-accent-500 opacity-0 group-hover:opacity-10 transition-opacity duration-300 pointer-events-none"></div>
             </div>
             {errors.email && (
-              <p className="text-red-300 text-sm font-medium animate-fade-in-up">{errors.email.message}</p>
+              <p className="text-red-500 text-sm font-medium animate-fade-in-up">{errors.email.message}</p>
             )}
           </div>
         </div>
@@ -233,7 +244,7 @@ function RegisterPageContent() {
         <div className={`space-y-2 transition-all duration-1000 ${
           isAnimated ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
         }`} style={{ transitionDelay: '400ms' }}>
-          <label className="block text-white text-opacity-90 text-sm font-semibold tracking-wide">
+          <label className="block text-gray-700 text-sm font-semibold tracking-wide">
             Telefon Numarası
           </label>
           <div className="relative group">
@@ -246,7 +257,7 @@ function RegisterPageContent() {
             <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary-500 to-accent-500 opacity-0 group-hover:opacity-10 transition-opacity duration-300 pointer-events-none"></div>
           </div>
           {errors.phone_number && (
-            <p className="text-red-300 text-sm font-medium animate-fade-in-up">{errors.phone_number.message}</p>
+            <p className="text-red-500 text-sm font-medium animate-fade-in-up">{errors.phone_number.message}</p>
           )}
         </div>
 
@@ -254,7 +265,7 @@ function RegisterPageContent() {
         <div className={`space-y-2 transition-all duration-1000 ${
           isAnimated ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
         }`} style={{ transitionDelay: '500ms' }}>
-          <label className="block text-white text-opacity-90 text-sm font-semibold tracking-wide">
+          <label className="block text-gray-700 text-sm font-semibold tracking-wide">
             Şifre
           </label>
           <div className="relative group">
@@ -267,7 +278,7 @@ function RegisterPageContent() {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white text-opacity-60 hover:text-opacity-100 transition-all duration-200 p-1 rounded-lg hover:bg-white hover:bg-opacity-10"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-all duration-200 p-1 rounded-lg hover:bg-gray-100"
             >
               {showPassword ? <EyeSlashIcon className="h-5 w-5" /> : <EyeIcon className="h-5 w-5" />}
             </button>
@@ -275,16 +286,16 @@ function RegisterPageContent() {
           </div>
 
           {/* Password Strength Indicator */}
-          {password && (
+          {password && password.length > 0 && (
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
-                <div className="flex-1 bg-white bg-opacity-20 rounded-full h-2 overflow-hidden">
+                <div className="flex-1 bg-gray-200 rounded-full h-2 overflow-hidden">
                   <div 
                     className={`h-full transition-all duration-300 ${getPasswordStrengthColor()}`}
                     style={{ width: `${(passwordStrength / 4) * 100}%` }}
                   ></div>
                 </div>
-                <span className="text-white text-opacity-80 text-xs font-medium">
+                <span className="text-gray-600 text-xs font-medium">
                   {getPasswordStrengthText()}
                 </span>
               </div>
@@ -292,32 +303,32 @@ function RegisterPageContent() {
               {/* Password Requirements */}
               <div className="grid grid-cols-2 gap-2 text-xs">
                 <div className="flex items-center space-x-2">
-                  {password.length >= 8 ? (
+                  {(password?.length || 0) >= 8 ? (
                     <CheckIcon className="h-4 w-4 text-green-400" />
                   ) : (
                     <XMarkIcon className="h-4 w-4 text-red-400" />
                   )}
-                  <span className={password.length >= 8 ? 'text-green-300' : 'text-red-300'}>
+                  <span className={(password?.length || 0) >= 8 ? 'text-green-600' : 'text-red-500'}>
                     En az 8 karakter
                   </span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  {/[A-Z]/.test(password) ? (
+                  {/[A-Z]/.test(password || '') ? (
                     <CheckIcon className="h-4 w-4 text-green-400" />
                   ) : (
                     <XMarkIcon className="h-4 w-4 text-red-400" />
                   )}
-                  <span className={/[A-Z]/.test(password) ? 'text-green-300' : 'text-red-300'}>
+                  <span className={/[A-Z]/.test(password || '') ? 'text-green-600' : 'text-red-500'}>
                     Büyük harf
                   </span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  {/[0-9]/.test(password) ? (
+                  {/[0-9]/.test(password || '') ? (
                     <CheckIcon className="h-4 w-4 text-green-400" />
                   ) : (
                     <XMarkIcon className="h-4 w-4 text-red-400" />
                   )}
-                  <span className={/[0-9]/.test(password) ? 'text-green-300' : 'text-red-300'}>
+                  <span className={/[0-9]/.test(password || '') ? 'text-green-600' : 'text-red-500'}>
                     Rakam
                   </span>
                 </div>
@@ -326,7 +337,7 @@ function RegisterPageContent() {
           )}
           
           {errors.password && (
-            <p className="text-red-300 text-sm font-medium animate-fade-in-up">{errors.password.message}</p>
+            <p className="text-red-500 text-sm font-medium animate-fade-in-up">{errors.password.message}</p>
           )}
         </div>
 
@@ -334,7 +345,7 @@ function RegisterPageContent() {
         <div className={`space-y-2 transition-all duration-1000 ${
           isAnimated ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
         }`} style={{ transitionDelay: '600ms' }}>
-          <label className="block text-white text-opacity-90 text-sm font-semibold tracking-wide">
+          <label className="block text-gray-700 text-sm font-semibold tracking-wide">
             Şifre Tekrarı
           </label>
           <div className="relative group">
@@ -347,62 +358,58 @@ function RegisterPageContent() {
             <button
               type="button"
               onClick={() => setShowPasswordConfirm(!showPasswordConfirm)}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white text-opacity-60 hover:text-opacity-100 transition-all duration-200 p-1 rounded-lg hover:bg-white hover:bg-opacity-10"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-all duration-200 p-1 rounded-lg hover:bg-gray-100"
             >
               {showPasswordConfirm ? <EyeSlashIcon className="h-5 w-5" /> : <EyeIcon className="h-5 w-5" />}
             </button>
             <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary-500 to-accent-500 opacity-0 group-hover:opacity-10 transition-opacity duration-300 pointer-events-none"></div>
           </div>
           {errors.password_confirm && (
-            <p className="text-red-300 text-sm font-medium animate-fade-in-up">{errors.password_confirm.message}</p>
+            <p className="text-red-500 text-sm font-medium animate-fade-in-up">{errors.password_confirm.message}</p>
           )}
         </div>
 
-        {/* Account Type & Terms */}
-        <div className={`space-y-4 transition-all duration-1000 ${
+        {/* Terms Acceptance */}
+        <div className={`transition-all duration-1000 ${
           isAnimated ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
         }`} style={{ transitionDelay: '700ms' }}>
-          {/* Seller Account Option */}
-          <label className="flex items-center space-x-3 cursor-pointer group">
-            <input {...register('is_seller')} type="checkbox" className="sr-only" />
-            <div className="relative">
-              <div className="w-5 h-5 bg-white bg-opacity-20 border border-white border-opacity-30 rounded group-hover:bg-opacity-30 transition-all duration-200"></div>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <CheckIcon className="w-3 h-3 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-              </div>
-            </div>
-            <div>
-              <span className="text-white text-opacity-90 text-sm font-medium group-hover:text-opacity-100 transition-opacity duration-200">
-                Satıcı hesabı oluştur
-              </span>
-              <p className="text-white text-opacity-60 text-xs mt-1">
-                Araç satışı yapabilir ve gelişmiş özellikler kullanabilirsiniz
-              </p>
-            </div>
-          </label>
-
-          {/* Terms Acceptance */}
-          <label className="flex items-start space-x-3 cursor-pointer group">
-            <input {...register('terms')} type="checkbox" className="sr-only" />
+          <label className="flex items-start space-x-3 cursor-pointer group" onClick={() => termsField.onChange(!termsField.value)}>
+            <input 
+              type="checkbox" 
+              className="sr-only" 
+              name={termsField.name}
+              checked={termsField.value}
+              onChange={(e) => termsField.onChange(e.target.checked)}
+              onBlur={termsField.onBlur}
+              ref={termsField.ref}
+            />
             <div className="relative mt-1">
-              <div className="w-5 h-5 bg-white bg-opacity-20 border border-white border-opacity-30 rounded group-hover:bg-opacity-30 transition-all duration-200"></div>
+              <div className={`w-6 h-6 border-2 rounded-md transition-all duration-300 ${
+                termsField.value 
+                  ? 'bg-primary-600 border-primary-600 shadow-lg shadow-primary-600/30' 
+                  : 'bg-white border-gray-300 group-hover:border-primary-400 group-hover:shadow-md'
+              }`}></div>
               <div className="absolute inset-0 flex items-center justify-center">
-                <CheckIcon className="w-3 h-3 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                <CheckIcon className={`w-4 h-4 transition-all duration-300 ${
+                  termsField.value 
+                    ? 'text-white opacity-100 scale-100' 
+                    : 'text-primary-600 opacity-0 scale-75'
+                }`} />
               </div>
             </div>
             <div>
-              <span className="text-white text-opacity-90 text-sm font-medium group-hover:text-opacity-100 transition-opacity duration-200">
-                <Link href="/terms" className="text-primary-300 hover:text-primary-200 underline">
+              <span className="text-gray-700 text-sm font-medium group-hover:text-gray-900 transition-colors duration-200">
+                <Link href="/terms" className="text-primary-600 hover:text-primary-700 underline transition-colors duration-200">
                   Kullanım Koşulları
                 </Link>{' '}
                 ve{' '}
-                <Link href="/privacy" className="text-primary-300 hover:text-primary-200 underline">
+                <Link href="/privacy" className="text-primary-600 hover:text-primary-700 underline transition-colors duration-200">
                   Gizlilik Politikası
                 </Link>
                 'nı kabul ediyorum
               </span>
               {errors.terms && (
-                <p className="text-red-300 text-sm font-medium mt-1 animate-fade-in-up">
+                <p className="text-red-500 text-sm font-medium mt-1 animate-fade-in-up">
                   {errors.terms.message}
                 </p>
               )}
@@ -443,9 +450,9 @@ function RegisterPageContent() {
       <div className={`flex items-center space-x-4 transition-all duration-1000 ${
         isAnimated ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
       }`} style={{ transitionDelay: '900ms' }}>
-        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white via-opacity-30 to-transparent"></div>
-        <span className="text-white text-opacity-60 text-sm font-medium">veya</span>
-        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white via-opacity-30 to-transparent"></div>
+        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+        <span className="text-gray-500 text-sm font-medium">veya</span>
+        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
       </div>
 
       {/* Google Register */}
@@ -467,11 +474,11 @@ function RegisterPageContent() {
       <div className={`text-center transition-all duration-1000 ${
         isAnimated ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
       }`} style={{ transitionDelay: '1100ms' }}>
-        <p className="text-white text-opacity-70 text-sm">
+        <p className="text-gray-600 text-sm">
           Zaten hesabınız var mı?{' '}
           <Link 
             href="/auth/login" 
-            className="text-primary-300 hover:text-primary-200 font-semibold transition-colors duration-200 hover:underline"
+            className="text-primary-600 hover:text-primary-700 font-semibold transition-colors duration-200 hover:underline"
           >
             Giriş yapın
           </Link>

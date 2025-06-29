@@ -34,7 +34,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             "first_name",
             "last_name",
             "phone_number",
-            "is_seller",
         ]
         extra_kwargs = {
             'email': {'required': True},
@@ -68,7 +67,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             first_name=validated_data.get('first_name', ''),
             last_name=validated_data.get('last_name', ''),
             phone_number=validated_data.get('phone_number', ''),
-            is_seller=validated_data.get('is_seller', False),
         )
         return user
 

@@ -338,62 +338,131 @@ export default function DashboardPage() {
         </h3>
         <Link 
           href="/my-listings" 
-          className="text-blue-600 hover:text-blue-700 transition-colors text-sm font-medium flex items-center"
+          className="text-blue-600 hover:text-blue-700 transition-colors text-sm font-medium flex items-center hover:bg-blue-50 px-3 py-2 rounded-lg"
         >
           Tümünü Gör
           <ChevronRightIcon className="h-4 w-4 ml-1" />
         </Link>
       </div>
       
-      <div className="space-y-4">
+      <div className="space-y-3">
         {dashboard?.recent_listings?.length ? (
           dashboard.recent_listings.map((listing) => (
-            <div key={listing.id} className="flex items-center space-x-4 p-4 bg-gray-50/50 rounded-xl hover:bg-gray-100/50 transition-colors">
-              <div className="flex-shrink-0">
-                {listing.primary_image ? (
-                  <img
-                    src={listing.primary_image.thumbnail_url}
-                    alt={listing.title}
-                    className="w-16 h-16 object-cover rounded-xl shadow-sm"
-                  />
-                ) : (
-                  <div className="w-16 h-16 bg-gradient-to-br from-gray-200 to-gray-300 rounded-xl flex items-center justify-center">
-                    <EyeIcon className="h-6 w-6 text-gray-500" />
+            <div 
+              key={listing.id} 
+              className="group relative bg-gradient-to-r from-gray-50/50 to-white/50 rounded-xl p-4 hover:from-blue-50/50 hover:to-purple-50/50 transition-all duration-300 hover:shadow-md border border-gray-100 hover:border-blue-200"
+            >
+              <div className="flex items-center space-x-4">
+                <div className="flex-shrink-0 relative">
+                  {listing.primary_image ? (
+                    <div className="relative">
+                      <img
+                        src={listing.primary_image.thumbnail_url}
+                        alt={listing.title}
+                        className="w-20 h-20 object-cover rounded-xl shadow-sm ring-2 ring-white group-hover:ring-blue-100 transition-all"
+                      />
+                      <div className="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white shadow-sm"></div>
+                    </div>
+                  ) : (
+                    <div className="w-20 h-20 bg-gradient-to-br from-gray-200 to-gray-300 rounded-xl flex items-center justify-center shadow-sm ring-2 ring-white group-hover:ring-blue-100 transition-all">
+                      <EyeIcon className="h-8 w-8 text-gray-500" />
+                    </div>
+                  )}
+                </div>
+                
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-bold text-gray-900 text-lg truncate group-hover:text-blue-900 transition-colors">
+                        {listing.title}
+                      </h4>
+                      <div className="flex items-center space-x-2 mt-1 mb-2">
+                        <span className="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full">
+                          {listing.car?.brand?.name}
+                        </span>
+                        <span className="inline-flex items-center px-2 py-1 bg-purple-100 text-purple-700 text-xs font-medium rounded-full">
+                          {listing.car?.model?.name}
+                        </span>
+                        <span className="inline-flex items-center px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">
+                          {listing.car?.year}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-2xl font-black bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                          {formatPrice(listing.price)}
+                        </span>
+                        <div className="flex items-center space-x-2">
+                          <span className={`inline-flex items-center px-2 py-1 text-xs font-medium rounded-full ${
+                            listing.is_active 
+                              ? 'bg-green-100 text-green-700' 
+                              : 'bg-yellow-100 text-yellow-700'
+                          }`}>
+                            {listing.is_active ? '✓ Aktif' : '⏸ Beklemede'}
+                          </span>
+                          <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full font-medium">
+                            {formatRelativeTime(listing.created_at)}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                )}
-              </div>
-              
-              <div className="flex-1 min-w-0">
-                <h4 className="font-semibold text-gray-900 truncate">{listing.title}</h4>
-                <p className="text-sm text-gray-600">
-                  {listing.car?.brand?.name} {listing.car?.model?.name} • {listing.car?.year}
-                </p>
-                <div className="flex items-center justify-between mt-2">
-                  <span className="text-lg font-bold text-blue-600">
-                    {formatPrice(listing.price)}
-                  </span>
-                  <span className="text-xs text-gray-500 bg-gray-200 px-2 py-1 rounded-full">
-                    {formatRelativeTime(listing.created_at)}
-                  </span>
+                </div>
+                
+                <div className="flex-shrink-0">
+                  <div className="flex flex-col items-center space-y-2">
+                    <Link 
+                      href={`/listings/${listing.id}`}
+                      className="p-2 bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-lg transition-colors group/btn"
+                    >
+                      <EyeIcon className="h-4 w-4 group-hover/btn:scale-110 transition-transform" />
+                    </Link>
+                    <Link 
+                      href={`/listings/${listing.id}/edit`}
+                      className="p-2 bg-purple-100 hover:bg-purple-200 text-purple-600 rounded-lg transition-colors group/btn"
+                    >
+                      <CogIcon className="h-4 w-4 group-hover/btn:scale-110 transition-transform" />
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>
           ))
         ) : (
-          <div className="text-center py-12">
-            <div className="w-16 h-16 bg-gradient-to-br from-gray-200 to-gray-300 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <EyeIcon className="h-8 w-8 text-gray-500" />
+          <div className="text-center py-16 bg-gradient-to-br from-gray-50/30 to-blue-50/30 rounded-2xl border-2 border-dashed border-gray-200">
+            <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-purple-100 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <PlusIcon className="h-10 w-10 text-blue-600" />
             </div>
-            <p className="text-gray-600 font-medium mb-2">Henüz ilan yok</p>
+            <h4 className="text-xl font-bold text-gray-900 mb-2">Henüz ilan yok</h4>
+            <p className="text-gray-600 mb-6 max-w-sm mx-auto">
+              İlk ilanınızı vererek binlerce potansiyel alıcıya ulaşın
+            </p>
             <Link 
               href="/listings/new"
-              className="text-blue-600 hover:text-blue-700 transition-colors text-sm font-medium"
+              className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl font-semibold transform hover:scale-105"
             >
-              İlk ilanınızı verin →
+              <PlusIcon className="h-5 w-5 mr-2" />
+              İlk İlanınızı Verin
             </Link>
           </div>
         )}
       </div>
+      
+      {dashboard?.recent_listings?.length > 0 && (
+        <div className="mt-6 pt-4 border-t border-gray-200">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-gray-600">
+              Toplam {dashboard.stats.total_listings} ilan • {dashboard.stats.active_listings} aktif
+            </span>
+            <Link 
+              href="/listings/new"
+              className="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium"
+            >
+              <PlusIcon className="h-4 w-4 mr-1" />
+              Yeni İlan
+            </Link>
+          </div>
+        </div>
+      )}
     </div>
   )
 
@@ -406,49 +475,126 @@ export default function DashboardPage() {
         </h3>
         <Link 
           href="/messages" 
-          className="text-blue-600 hover:text-blue-700 transition-colors text-sm font-medium flex items-center"
+          className="text-blue-600 hover:text-blue-700 transition-colors text-sm font-medium flex items-center hover:bg-blue-50 px-3 py-2 rounded-lg"
         >
           Tümünü Gör
           <ChevronRightIcon className="h-4 w-4 ml-1" />
         </Link>
       </div>
       
-      <div className="space-y-4">
+      <div className="space-y-3">
         {dashboard?.recent_messages?.length ? (
           dashboard.recent_messages.map((message) => (
-            <div key={message.id} className="flex items-start space-x-3 p-4 bg-gray-50/50 rounded-xl hover:bg-gray-100/50 transition-colors">
-              <div className="flex-shrink-0">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-sm">
-                  <span className="text-white font-bold text-sm">
-                    {message.sender?.username?.charAt(0)?.toUpperCase() || 'U'}
-                  </span>
+            <div 
+              key={message.id} 
+              className="group relative bg-gradient-to-r from-gray-50/50 to-white/50 rounded-xl p-4 hover:from-green-50/50 hover:to-blue-50/50 transition-all duration-300 hover:shadow-md border border-gray-100 hover:border-green-200"
+            >
+              <div className="flex items-start space-x-4">
+                <div className="flex-shrink-0 relative">
+                  <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-blue-600 rounded-xl flex items-center justify-center shadow-sm ring-2 ring-white group-hover:ring-green-100 transition-all">
+                    <span className="text-white font-bold text-sm">
+                      {message.sender?.username?.charAt(0)?.toUpperCase() || 'U'}
+                    </span>
+                  </div>
+                  {!message.is_read && message.receiver?.id === user?.id && (
+                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white"></div>
+                  )}
                 </div>
-              </div>
-              
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between mb-1">
-                  <h4 className="font-semibold text-gray-900 text-sm">
-                    {message.sender?.id === user?.id ? 'Siz' : message.sender?.username}
-                  </h4>
-                  <span className="text-xs text-gray-500 bg-gray-200 px-2 py-1 rounded-full">
-                    {formatRelativeTime(message.timestamp)}
-                  </span>
+                
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center space-x-2">
+                      <h4 className="font-bold text-gray-900 text-sm group-hover:text-green-900 transition-colors">
+                        {message.sender?.id === user?.id ? (
+                          <span className="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full">
+                            ← Siz gönderdiniz
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">
+                            → {message.sender?.username}
+                          </span>
+                        )}
+                      </h4>
+                      {!message.is_read && message.receiver?.id === user?.id && (
+                        <span className="inline-flex items-center px-2 py-1 bg-red-100 text-red-700 text-xs font-medium rounded-full">
+                          Yeni
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full font-medium">
+                      {formatRelativeTime(message.timestamp)}
+                    </span>
+                  </div>
+                  
+                  <p className="text-gray-700 text-sm leading-relaxed bg-gray-50 p-3 rounded-lg line-clamp-2 group-hover:bg-white transition-colors">
+                    "{message.text}"
+                  </p>
+                  
+                  <div className="flex items-center justify-between mt-3">
+                    <div className="flex items-center space-x-2">
+                      {message.is_read ? (
+                        <span className="inline-flex items-center text-xs text-green-600">
+                          <CheckCircleIcon className="h-3 w-3 mr-1" />
+                          Okundu
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center text-xs text-gray-500">
+                          <ClockIcon className="h-3 w-3 mr-1" />
+                          Okunmadı
+                        </span>
+                      )}
+                    </div>
+                    
+                    <Link 
+                      href={`/messages/${message.id}`}
+                      className="text-blue-600 hover:text-blue-700 text-xs font-medium hover:bg-blue-50 px-2 py-1 rounded transition-colors"
+                    >
+                      Yanıtla →
+                    </Link>
+                  </div>
                 </div>
-                <p className="text-sm text-gray-600 line-clamp-2">
-                  {message.text}
-                </p>
               </div>
             </div>
           ))
         ) : (
-          <div className="text-center py-12">
-            <div className="w-16 h-16 bg-gradient-to-br from-green-200 to-blue-300 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <ChatBubbleLeftRightIcon className="h-8 w-8 text-green-600" />
+          <div className="text-center py-16 bg-gradient-to-br from-gray-50/30 to-green-50/30 rounded-2xl border-2 border-dashed border-gray-200">
+            <div className="w-20 h-20 bg-gradient-to-br from-green-100 to-blue-100 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <ChatBubbleLeftRightIcon className="h-10 w-10 text-green-600" />
             </div>
-            <p className="text-gray-600 font-medium">Henüz mesaj yok</p>
+            <h4 className="text-xl font-bold text-gray-900 mb-2">Henüz mesaj yok</h4>
+            <p className="text-gray-600 mb-6 max-w-sm mx-auto">
+              İlanlarınıza ilgi gösteren kullanıcılarla mesajlaşabilirsiniz
+            </p>
+            <Link 
+              href="/listings"
+              className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-xl hover:from-green-700 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl font-semibold transform hover:scale-105"
+            >
+              <EyeIcon className="h-5 w-5 mr-2" />
+              İlanları Keşfet
+            </Link>
           </div>
         )}
       </div>
+      
+      {dashboard?.recent_messages?.length > 0 && (
+        <div className="mt-6 pt-4 border-t border-gray-200">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-gray-600">
+              {dashboard.stats.unread_messages > 0 
+                ? `${dashboard.stats.unread_messages} okunmamış mesaj`
+                : 'Tüm mesajlar okundu'
+              }
+            </span>
+            <Link 
+              href="/messages"
+              className="inline-flex items-center text-green-600 hover:text-green-700 font-medium"
+            >
+              <ChatBubbleLeftRightIcon className="h-4 w-4 mr-1" />
+              Mesajlaşma
+            </Link>
+          </div>
+        </div>
+      )}
     </div>
   )
 

@@ -256,31 +256,70 @@ class UserViewSet(viewsets.ModelViewSet):
         
         user = request.user
         
-        # Kullanıcının ilanları
-        from listings.models import Listing
-        listings = Listing.objects.filter(
-            user=user, 
-            is_deleted=False
-        ).select_related('car', 'location')
-        
-        # Mesajlar
-        from private_messages.models import Message
-        unread_messages = Message.objects.filter(
-            receiver=user,
-            is_read=False
-        ).count()
-        
-        # İstatistikler
-        stats = {
-            'total_listings': listings.count(),
-            'active_listings': listings.filter(is_active=True).count(),
-            'unread_messages': unread_messages,
-        }
-        
-        return Response({
-            'user': UserSerializer(user).data,
-            'stats': stats,
-        })
+        try:
+            # Kullanıcının ilanları
+            from listings.models import Listing
+            from listings.serializers import ListingSerializer
+            listings = Listing.objects.filter(
+                user=user, 
+                is_deleted=False
+            ).select_related('car', 'city')
+            
+            # Mesajlar
+            from private_messages.models import Message
+            from private_messages.serializers import MessageSerializer
+            unread_messages = Message.objects.filter(
+                receiver=user,
+                is_read=False
+            ).count()
+            
+            # Son ilanlar (en yeni 5 tanesi)
+            recent_listings = listings.order_by('-created_at')[:5]
+            recent_listings_data = ListingSerializer(
+                recent_listings, 
+                many=True, 
+                context={'request': request}
+            ).data
+            
+            # Son mesajlar (en yeni 5 tanesi)
+            recent_messages = Message.objects.filter(
+                Q(sender=user) | Q(receiver=user)
+            ).order_by('-timestamp')[:5]
+            recent_messages_data = MessageSerializer(recent_messages, many=True).data
+            
+            # İstatistikler
+            stats = {
+                'total_listings': listings.count(),
+                'active_listings': listings.filter(is_active=True).count(),
+                'inactive_listings': listings.filter(is_active=False).count(),
+                'unread_messages': unread_messages,
+            }
+            
+            return Response({
+                'user': UserSerializer(user).data,
+                'stats': stats,
+                'recent_listings': recent_listings_data,
+                'recent_messages': recent_messages_data,
+            })
+            
+        except Exception as e:
+            # Debug için error'u log'layalım
+            print(f"Dashboard error: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            
+            # Fallback response
+            return Response({
+                'user': UserSerializer(user).data,
+                'stats': {
+                    'total_listings': 0,
+                    'active_listings': 0,
+                    'inactive_listings': 0,
+                    'unread_messages': 0,
+                },
+                'recent_listings': [],
+                'recent_messages': [],
+            })
 
     @action(detail=False, methods=['get'])
     def my_listings(self, request):

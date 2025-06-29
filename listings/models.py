@@ -27,7 +27,7 @@ class Listing(models.Model):
 class ListingImage(models.Model):
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name='images')
     image = models.ImageField(upload_to="listing_images/")
-    thumbnail = models.ImageField(upload_to="listing_images/thumbnails/", blank=True, null=True)
+    # thumbnail alanı kaldırıldı - signals ile otomatik oluşturuluyor
 
     order = models.PositiveIntegerField(default=0, help_text="Resim sırası, 0 en önde")
     is_primary = models.BooleanField(default=False, help_text="Bu resim ana resim olarak işaretlensin mi?")
@@ -43,6 +43,24 @@ class ListingImage(models.Model):
         verbose_name = 'İlan Resmi'
         verbose_name_plural = 'İlan Resimleri'
 
+    @property
+    def thumbnail_url(self):
+        """Otomatik oluşturulan thumbnail'ın URL'ini döndür"""
+        if self.image:
+            # Ana resim dosya yolundan thumbnail yolunu oluştur
+            import os
+            base_name = os.path.splitext(self.image.name)[0]
+            # Sadece dosya adını al (path kaldır)
+            clean_base_name = os.path.basename(base_name)
+            thumbnail_path = f"listing_images/thumbnails/{clean_base_name}_thumbnail.jpg"
+            try:
+                from django.core.files.storage import default_storage
+                if default_storage.exists(thumbnail_path):
+                    return default_storage.url(thumbnail_path)
+            except:
+                pass
+        return None
+
     def save(self, *args, **kwargs):
         # Sadece basit model logic - ağır işler signals'da
         if self.is_primary:
@@ -57,8 +75,8 @@ class ListingImage(models.Model):
         4:3 formatındaki resim URL'lerini döndür
         """
         try:
-            if size == 'thumbnail' and self.thumbnail:
-                return self.thumbnail.url
+            if size == 'thumbnail':
+                return self.thumbnail_url
             elif size == 'original' and self.image:
                 return self.image.url
             else:

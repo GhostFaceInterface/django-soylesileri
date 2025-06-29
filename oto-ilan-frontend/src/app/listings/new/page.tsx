@@ -259,17 +259,12 @@ export default function NewListingPage() {
 
   const selectThumbnail = (id: string) => {
     setSelectedThumbnail(id)
-    toast.success('Thumbnail seçildi!')
+    toast.success('Ana resim seçildi!')
   }
 
   const onSubmit = async (data: ListingFormData) => {
     if (images.length === 0) {
       toast.error('En az bir resim yüklemelisiniz!')
-      return
-    }
-
-    if (!selectedThumbnail) {
-      toast.error('Lütfen bir thumbnail seçin!')
       return
     }
 
@@ -283,10 +278,13 @@ export default function NewListingPage() {
       const imageFiles = images.map(img => img.file)
       await authService.uploadImages(listing.id, imageFiles)
       
-      // Set thumbnail
-      const thumbnailImage = images.find(img => img.id === selectedThumbnail)
-      if (thumbnailImage?.uploadedImageId) {
-        await authService.setPrimaryImage(thumbnailImage.uploadedImageId)
+      // Set thumbnail ONLY if user manually selected one
+      // If no selection, backend automatically sets first image as primary
+      if (selectedThumbnail) {
+        const thumbnailImage = images.find(img => img.id === selectedThumbnail)
+        if (thumbnailImage?.uploadedImageId) {
+          await authService.setPrimaryImage(thumbnailImage.uploadedImageId)
+        }
       }
       
       toast.success('İlan başarıyla oluşturuldu!')
@@ -337,7 +335,7 @@ export default function NewListingPage() {
       
       {selectedThumbnail === image.id && (
         <div className="absolute bottom-2 left-2 bg-yellow-500 text-white px-2 py-1 rounded-lg text-xs font-medium">
-          Thumbnail
+          Ana Resim
         </div>
       )}
     </div>
@@ -757,15 +755,15 @@ export default function NewListingPage() {
 
               {/* Thumbnail Selection Info */}
               {images.length > 0 && (
-                <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
+                <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
                   <div className="flex items-start space-x-3">
-                    <StarIcon className="h-5 w-5 text-yellow-600 mt-0.5" />
+                    <StarIcon className="h-5 w-5 text-blue-600 mt-0.5" />
                     <div>
-                      <h3 className="font-medium text-yellow-800">Thumbnail Seçimi</h3>
-                      <p className="text-sm text-yellow-700 mt-1">
+                      <h3 className="font-medium text-blue-800">Ana Resim Seçimi (İsteğe Bağlı)</h3>
+                      <p className="text-sm text-blue-700 mt-1">
                         {selectedThumbnail 
-                          ? 'Thumbnail seçildi! Bu resim ilan kartlarında görünecek.'
-                          : 'Lütfen yüklediğiniz resimlerden birini thumbnail olarak seçin.'
+                          ? 'Ana resim seçildi! Bu resim ilan kartlarında görünecek.'
+                          : 'Seçim yapmazsanız ilk yüklenen resim otomatik olarak ana resim olacak.'
                         }
                       </p>
                     </div>

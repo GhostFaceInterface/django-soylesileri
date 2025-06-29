@@ -30,10 +30,26 @@ class ListingImageSerializer(serializers.ModelSerializer):
         read_only_fields = ['file_size', 'width', 'height']
 
     def get_thumbnail_url(self, obj):
-        return obj.get_image_url(size='thumbnail')
+        thumbnail_url = obj.get_image_url(size='thumbnail')
+        if thumbnail_url:
+            # Request context varsa tam URL oluştur
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(thumbnail_url)
+            # Context yoksa Django'nun tam URL'ini oluştur
+            return f"http://localhost:8000{thumbnail_url}"
+        return None
     
     def get_original_url(self, obj):
-        return obj.get_image_url(size='original')
+        original_url = obj.get_image_url(size='original')
+        if original_url:
+            # Request context varsa tam URL oluştur
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(original_url)
+            # Context yoksa Django'nun tam URL'ini oluştur
+            return f"http://localhost:8000{original_url}"
+        return None
     
     def get_file_size_mb(self, obj):
         if obj.file_size:

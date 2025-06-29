@@ -5,6 +5,8 @@ from .models import Listing, ListingImage
 class ListingImageInline(admin.TabularInline):
     model = ListingImage
     extra = 3
+    fields = ['image', 'order', 'is_primary', 'file_size', 'width', 'height']
+    readonly_fields = ['file_size', 'width', 'height']
 
 # İlan için özelleştirilmiş admin görünümü
 @admin.register(Listing)
@@ -37,5 +39,7 @@ class ListingAdmin(admin.ModelAdmin):
 # Resim için de özelleştirilmiş admin görünümü
 @admin.register(ListingImage)
 class ListingImageAdmin(admin.ModelAdmin):
-    list_display = ['listing', 'image']
-    list_filter = ['listing']
+    list_display = ['listing', 'image', 'order', 'is_primary', 'file_size', 'uploaded_at']
+    list_filter = ['listing', 'is_primary']
+    readonly_fields = ['file_size', 'width', 'height', 'uploaded_at']
+    fields = ['listing', 'image', 'order', 'is_primary', 'file_size', 'width', 'height', 'uploaded_at']

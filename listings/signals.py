@@ -109,12 +109,22 @@ def process_image_before_save(sender, instance, **kwargs):
             # 1 Resim doğrulama
             ImageProcessor.validate_image(instance.image)
 
-            # 2 Dosya bilgilerini al
-            temp_image = Image.open(instance.image)
-            instance.width = temp_image.width
-            instance.height = temp_image.height
-            instance.file_size = instance.image.size
-            temp_image.close()
+            # 2 Dosya bilgilerini al - dosya pozisyonunu koruyarak
+            original_position = instance.image.tell() if hasattr(instance.image, 'tell') else 0
+            
+            # Dosyayı başa sar
+            if hasattr(instance.image, 'seek'):
+                instance.image.seek(0)
+            
+            # PIL ile boyut bilgilerini al
+            with Image.open(instance.image) as temp_image:
+                instance.width = temp_image.width
+                instance.height = temp_image.height
+                instance.file_size = instance.image.size
+            
+            # Dosya pozisyonunu geri yükle
+            if hasattr(instance.image, 'seek'):
+                instance.image.seek(original_position)
 
             # 3 Yeni dosya adını oluştur
             original_name = instance.image.name
@@ -137,15 +147,36 @@ def create_thumbnail_after_save(sender, instance, created, **kwargs):
                 instance.image,
                 os.path.splitext(instance.image.name)[0]  # Dosya adını uzantı olmadan al
             )
-            # Thumbnail dosya yollarını güncelle (döngü önlemek için direkt DB update)
-            update_fields = {}
-            if "thumbnail" in thumbnails:
-                update_fields['thumbnail'] = thumbnails['thumbnail']
+            # Thumbnail dosyası oluşturuldu - artık veritabanında thumbnail field'ı yok
+            # Thumbnail'a property üzerinden erişiliyor
             
-            if update_fields:
-                ListingImage.objects.filter(pk=instance.pk).update(**update_fields)
+            if "thumbnail" in thumbnails:
                 logger.info(f"4:3 Thumbnail oluşturuldu: {instance.image.name}")
         except Exception as e:
             logger.error(f"Thumbnail oluşturma hatası: {e}")
+
+
+@receiver(post_save, sender=ListingImage)
+def auto_set_first_image_as_primary(sender, instance, created, **kwargs):
+    """
+    İlk resim otomatik olarak primary olarak ayarlanır.
+    Kullanıcı müdahale etmezse ilk resim ana resim olur.
+    """
+    if created:
+        # Bu ilan için kaç resim var?
+        image_count = ListingImage.objects.filter(listing=instance.listing).count()
+        
+        # Eğer bu ilk resimse ve henüz hiçbir resim primary değilse
+        if image_count == 1:
+            primary_exists = ListingImage.objects.filter(
+                listing=instance.listing, 
+                is_primary=True
+            ).exists()
+            
+            if not primary_exists:
+                # İlk resmi otomatik primary yap
+                instance.is_primary = True
+                instance.save(update_fields=['is_primary'])
+                logger.info(f"[Auto Primary] İlk resim otomatik primary yapıldı: {instance.image.name}")
 
 

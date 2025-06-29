@@ -33,19 +33,38 @@ class ImageProcessor:
     @staticmethod
     def validate_image(image_file):
         try:
+            # Dosya boyutu kontrolü
             if image_file.size > ImageProcessor.MAX_FILE_SIZE:
                 raise ValueError(f"Dosya boyutu çok büyük. Maksimum {ImageProcessor.MAX_FILE_SIZE // (1024*1024)}MB olabilir.")
             
-            image = Image.open(image_file)
-            if image.format not in ImageProcessor.ALLOWED_FORMATS:
-                raise ValueError(f"Desteklenmeyen format. Sadece {', '.join(ImageProcessor.ALLOWED_FORMATS)} desteklenir.")
+            # Dosya pozisyonunu kaydet
+            original_position = image_file.tell() if hasattr(image_file, 'tell') else 0
             
-            if image.size[0] < 320 or image.size[1] < 240:
-                raise ValueError("Resim boyutu çok küçük. En az 320x240 piksel olmalıdır.")
+            # Dosyayı başa sar
+            if hasattr(image_file, 'seek'):
+                image_file.seek(0)
+            
+            # PIL ile kontrol et
+            with Image.open(image_file) as image:
+                if image.format not in ImageProcessor.ALLOWED_FORMATS:
+                    raise ValueError(f"Desteklenmeyen format. Sadece {', '.join(ImageProcessor.ALLOWED_FORMATS)} desteklenir.")
+                
+                if image.size[0] < 320 or image.size[1] < 240:
+                    raise ValueError("Resim boyutu çok küçük. En az 320x240 piksel olmalıdır.")
+            
+            # Dosya pozisyonunu geri yükle
+            if hasattr(image_file, 'seek'):
+                image_file.seek(original_position)
             
             return True
         
         except Exception as e:
+            # Hata durumunda da dosya pozisyonunu geri yükle
+            if hasattr(image_file, 'seek'):
+                try:
+                    image_file.seek(original_position if 'original_position' in locals() else 0)
+                except:
+                    pass
             logger.error(f"Resim doğrulama hatası: {e}")
             raise ValueError(f"Resim doğrulama hatası: {e}")
         
@@ -133,19 +152,23 @@ class ImageProcessor:
     def create_thumbnails(image_file, filename_base):
         thumbnails = {}
         base_name, extension = os.path.splitext(filename_base)
+        
+        # Dosya adından sadece filename kısmını al (path'ı kaldır)
+        clean_base_name = os.path.basename(base_name)
+        
         for size_name, dimensions in ImageProcessor.SIZES.items():
             try:
                 processed_image = ImageProcessor.process_image(image_file, size_name)
                 if size_name == "original":
                     # ✅ Orijinal resim ana dizine
                     file_path = default_storage.save(
-                        f"listing_images/{base_name}.jpg",
+                        f"listing_images/{clean_base_name}.jpg",
                         processed_image
                     )
                 else:
-                    # Thumbnail'lar alt dizine
+                    # Thumbnail'lar alt dizine - sadece clean filename kullan
                     file_path = default_storage.save(
-                        f"listing_images/thumbnails/{base_name}_{size_name}.jpg",
+                        f"listing_images/thumbnails/{clean_base_name}_{size_name}.jpg",
                         processed_image
                     )
                 

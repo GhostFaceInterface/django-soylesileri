@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/lib/stores/auth'
+import { authService } from '@/lib/services/auth'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -99,23 +100,16 @@ export default function ProfileEditPage() {
         formData.append('profile_photo', profilePhoto)
       }
 
-      const response = await fetch('/api/users/profile/', {
-        method: 'PATCH',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
-        },
-        body: formData,
-      })
-
-      if (response.ok) {
-        toast.success('Profil başarıyla güncellendi!')
-        await loadUser()
-        router.push('/dashboard')
-      } else {
-        toast.error('Profil güncellenirken bir hata oluştu')
-      }
-    } catch (error) {
-      toast.error('Bir hata oluştu')
+      await authService.updateProfile(formData)
+      toast.success('Profil başarıyla güncellendi!')
+      await loadUser()
+      router.push('/dashboard')
+    } catch (error: any) {
+      console.error('Profile update error:', error)
+      const errorMessage = error.response?.data?.detail || 
+                          error.response?.data?.message || 
+                          'Profil güncellenirken bir hata oluştu'
+      toast.error(errorMessage)
     } finally {
       setIsLoading(false)
     }
@@ -205,7 +199,7 @@ export default function ProfileEditPage() {
                   <h3 className="font-semibold text-gray-900 mb-1">Fotoğraf Seçin</h3>
                   <p className="text-sm text-gray-600 mb-3">JPG, PNG veya GIF formatında, en fazla 5MB</p>
                   
-                  <label className="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg cursor-pointer transition-colors">
+                  <label className="inline-flex items-center px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg cursor-pointer transition-colors">
                     <CameraIcon className="h-4 w-4 mr-2" />
                     Dosya Seç
                     <input
@@ -236,7 +230,7 @@ export default function ProfileEditPage() {
                     {...register('first_name')}
                     type="text"
                     placeholder="Adınız"
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder-gray-500"
                   />
                   {errors.first_name && (
                     <p className="text-red-500 text-sm mt-1">{errors.first_name.message}</p>
@@ -252,7 +246,7 @@ export default function ProfileEditPage() {
                     {...register('last_name')}
                     type="text"
                     placeholder="Soyadınız"
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder-gray-500"
                   />
                   {errors.last_name && (
                     <p className="text-red-500 text-sm mt-1">{errors.last_name.message}</p>
@@ -268,7 +262,7 @@ export default function ProfileEditPage() {
                     {...register('email')}
                     type="email"
                     placeholder="ornek@email.com"
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder-gray-500"
                   />
                   {errors.email && (
                     <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
@@ -284,7 +278,7 @@ export default function ProfileEditPage() {
                     {...register('phone_number')}
                     type="tel"
                     placeholder="05XX XXX XX XX"
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder-gray-500"
                   />
                   {errors.phone_number && (
                     <p className="text-red-500 text-sm mt-1">{errors.phone_number.message}</p>
@@ -301,7 +295,7 @@ export default function ProfileEditPage() {
                   {...register('bio')}
                   rows={4}
                   placeholder="Kendiniz hakkında kısa bir bilgi yazın..."
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none text-gray-900 placeholder-gray-500"
                 />
                 {errors.bio && (
                   <p className="text-red-500 text-sm mt-1">{errors.bio.message}</p>
@@ -314,7 +308,7 @@ export default function ProfileEditPage() {
             <div className="flex items-center justify-end space-x-4 bg-white/80 backdrop-blur-xl border border-white/20 rounded-2xl p-6 shadow-lg">
               <Link
                 href="/dashboard"
-                className="px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-medium transition-colors"
+                className="px-6 py-3 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-xl font-medium transition-colors"
               >
                 İptal
               </Link>

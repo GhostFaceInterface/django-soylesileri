@@ -377,62 +377,75 @@ function PremiumListingCard({ listing }: { listing: Listing }) {
   
   return (
     <Link href={`/listings/${listing.id}`} className="group block">
-      <div className="card-glass overflow-hidden hover:scale-105 transition-all duration-500">
-        <div className="relative aspect-[16/9] overflow-hidden">
+      <div className="bg-white/10 backdrop-blur-xl rounded-2xl overflow-hidden hover:bg-white/15 transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl border border-white/20">
+        
+        {/* Image Container - Fixed Aspect Ratio */}
+        <div className="relative aspect-[4/3] overflow-hidden bg-slate-800">
           {primaryImage ? (
-            <div className="relative w-full h-full">
+            <>
               <img
-                src={primaryImage.medium_url || primaryImage.thumbnail_url}
+                src={primaryImage.thumbnail_url || primaryImage.original_url}
                 alt={listing.title}
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
               />
-              {/* Gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               
-              {/* Premium badge */}
-              <div className="absolute top-3 left-3 bg-gradient-to-r from-primary-500 to-accent-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                Premium
+              {/* Subtle overlay for better text readability */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              
+              {/* Premium badge - top right */}
+              <div className="absolute top-3 right-3 bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-2 py-1 rounded-lg text-xs font-bold shadow-lg">
+                PREMIUM
               </div>
-            </div>
+            </>
           ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-800 to-slate-900">
+            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-700 to-slate-800">
               <div className="text-center">
-                <EyeIcon className="h-12 w-12 text-white/40 mx-auto mb-2" />
-                <span className="text-white/60 text-sm">Resim Yükleniyor</span>
+                <EyeIcon className="h-8 w-8 text-white/40 mx-auto mb-2" />
+                <span className="text-white/60 text-xs">Resim Yükleniyor</span>
               </div>
             </div>
           )}
         </div>
         
-        <div className="p-6">
-          <h3 className="font-bold text-white mb-3 line-clamp-1 text-lg group-hover:text-primary-300 transition-colors duration-300">
-            {listing.title}
-          </h3>
+        {/* Content Container - Fixed Height */}
+        <div className="p-4 h-32 flex flex-col justify-between">
           
-          <div className="text-white/60 mb-4 flex items-center space-x-2">
-            <span className="bg-white/10 px-2 py-1 rounded text-sm">
-              {listing.car.brand.name}
-            </span>
-            <span className="bg-white/10 px-2 py-1 rounded text-sm">
-              {listing.car.model.name}
-            </span>
-            <span className="bg-white/10 px-2 py-1 rounded text-sm">
-              {listing.car.year}
-            </span>
+          {/* Title - Single line with ellipsis */}
+          <div>
+            <h3 className="font-bold text-white text-base leading-tight mb-2 truncate group-hover:text-yellow-300 transition-colors duration-300">
+              {listing.title}
+            </h3>
+            
+            {/* Car Info - Compact badges */}
+            <div className="flex items-center gap-1 mb-2 flex-wrap">
+              <span className="bg-white/20 text-white/90 px-2 py-0.5 rounded text-xs font-medium truncate max-w-[60px]">
+                {listing.car.brand.name}
+              </span>
+              <span className="bg-white/20 text-white/90 px-2 py-0.5 rounded text-xs font-medium truncate max-w-[60px]">
+                {listing.car.model.name}
+              </span>
+              <span className="bg-white/20 text-white/90 px-2 py-0.5 rounded text-xs font-medium">
+                {listing.car.year}
+              </span>
+            </div>
           </div>
           
-          <div className="flex justify-between items-center">
-            <span className="text-2xl font-bold bg-gradient-to-r from-primary-400 to-accent-400 bg-clip-text text-transparent">
+          {/* Price - Bottom aligned */}
+          <div className="flex justify-between items-end">
+            <span className="text-xl font-bold bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
               {formatPrice(listing.price)}
             </span>
-            <span className="text-sm text-white/50">
-              {formatRelativeTime(listing.created_at)}
-            </span>
+            
+            {/* View indicator instead of date */}
+            <div className="flex items-center text-white/50 text-xs">
+              <EyeIcon className="h-3 w-3 mr-1" />
+              <span>Görüntüle</span>
+            </div>
           </div>
         </div>
         
         {/* Hover glow effect */}
-        <div className="absolute inset-0 bg-gradient-to-r from-primary-500/10 to-accent-500/10 opacity-0 group-hover:opacity-100 rounded-2xl transition-opacity duration-500 -z-10 blur-xl"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 opacity-0 group-hover:opacity-100 rounded-2xl transition-opacity duration-500 pointer-events-none"></div>
       </div>
     </Link>
   )

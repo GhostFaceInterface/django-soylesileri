@@ -161,14 +161,14 @@ export default function ListingsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-blue-900 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-slate-950 to-black relative overflow-hidden">
       {/* Simplified Background - Performance Optimized */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {/* Single subtle gradient instead of 3 animated circles */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 via-transparent to-cyan-600/5"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-indigo-950/20 via-transparent to-purple-950/10"></div>
         
         {/* Static grid pattern instead of animated */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(59,130,246,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.03)_1px,transparent_1px)] bg-[size:20px_20px]"></div>
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(79,70,229,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(79,70,229,0.02)_1px,transparent_1px)] bg-[size:20px_20px]"></div>
       </div>
       
       <Header />
@@ -178,7 +178,7 @@ export default function ListingsPage() {
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-3xl font-bold text-white mb-2">İlanlar</h1>
-            <p className="text-blue-100/70">
+            <p className="text-gray-400/70">
               {loading ? 'Yükleniyor...' : `${listings.length} ilan bulundu`}
             </p>
           </div>
@@ -186,7 +186,7 @@ export default function ListingsPage() {
           {/* Mobile Filter Toggle */}
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="md:hidden bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-4 py-2 rounded-xl flex items-center gap-2 shadow-lg hover:shadow-xl transition-all"
+            className="md:hidden bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-2 rounded-xl flex items-center gap-2 shadow-lg hover:shadow-xl transition-all"
           >
             <AdjustmentsHorizontalIcon className="h-5 w-5" />
             Filtreler
@@ -196,12 +196,12 @@ export default function ListingsPage() {
         <div className="flex gap-8">
           {/* Sidebar Filters */}
           <div className={`${showFilters ? 'block' : 'hidden'} md:block md:w-80 flex-shrink-0`}>
-            <div className="bg-slate-800/50 rounded-2xl p-6 shadow-xl sticky top-24 border border-blue-500/20">
+            <div className="bg-gray-900/70 rounded-2xl p-6 shadow-xl sticky top-24 border border-gray-700/50">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-bold text-white">Filtreler</h3>
                 <button
                   onClick={() => setShowFilters(false)}
-                  className="md:hidden text-blue-200/60 hover:text-white"
+                  className="md:hidden text-gray-400/60 hover:text-white"
                 >
                   <XMarkIcon className="h-5 w-5" />
                 </button>
@@ -210,24 +210,24 @@ export default function ListingsPage() {
               <div className="space-y-6">
                 {/* Search */}
                 <div>
-                  <label className="block text-sm font-semibold text-blue-100/90 mb-2">
+                  <label className="block text-sm font-semibold text-gray-300/90 mb-2">
                     Arama
                   </label>
                   <div className="relative">
-                    <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-blue-300/40" />
+                    <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500/40" />
                     <input
                       type="text"
                       placeholder="Marka, model ara..."
                       value={filters.search}
                       onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-                      className="w-full pl-10 pr-4 py-3 bg-slate-700/40 border border-blue-400/30 rounded-xl text-white placeholder-blue-200/50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 backdrop-blur-sm"
+                      className="w-full pl-10 pr-4 py-3 bg-gray-800/60 border border-gray-600/40 rounded-xl text-white placeholder-gray-400/50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 backdrop-blur-sm"
                     />
                   </div>
                 </div>
 
                 {/* Price Range */}
                 <div>
-                  <label className="block text-sm font-semibold text-blue-100/90 mb-2">
+                  <label className="block text-sm font-semibold text-gray-300/90 mb-2">
                     Fiyat Aralığı
                   </label>
                   <div className="grid grid-cols-2 gap-3">
@@ -236,21 +236,21 @@ export default function ListingsPage() {
                       placeholder="Min"
                       value={filters.minPrice}
                       onChange={(e) => setFilters(prev => ({ ...prev, minPrice: e.target.value }))}
-                      className="w-full px-3 py-2 bg-slate-700/40 border border-blue-400/30 rounded-lg text-white placeholder-blue-200/50 focus:outline-none focus:ring-2 focus:ring-blue-400 backdrop-blur-sm"
+                      className="w-full px-3 py-2 bg-gray-800/60 border border-gray-600/40 rounded-lg text-white placeholder-gray-400/50 focus:outline-none focus:ring-2 focus:ring-indigo-500 backdrop-blur-sm"
                     />
                     <input
                       type="number"
                       placeholder="Max"
                       value={filters.maxPrice}
                       onChange={(e) => setFilters(prev => ({ ...prev, maxPrice: e.target.value }))}
-                      className="w-full px-3 py-2 bg-slate-700/40 border border-blue-400/30 rounded-lg text-white placeholder-blue-200/50 focus:outline-none focus:ring-2 focus:ring-blue-400 backdrop-blur-sm"
+                      className="w-full px-3 py-2 bg-gray-800/60 border border-gray-600/40 rounded-lg text-white placeholder-gray-400/50 focus:outline-none focus:ring-2 focus:ring-indigo-500 backdrop-blur-sm"
                     />
                   </div>
                 </div>
 
                 {/* Year Range */}
                 <div>
-                  <label className="block text-sm font-semibold text-blue-100/90 mb-2">
+                  <label className="block text-sm font-semibold text-gray-300/90 mb-2">
                     Yıl Aralığı
                   </label>
                   <div className="grid grid-cols-2 gap-3">
@@ -259,21 +259,21 @@ export default function ListingsPage() {
                       placeholder="Min"
                       value={filters.minYear}
                       onChange={(e) => setFilters(prev => ({ ...prev, minYear: e.target.value }))}
-                      className="w-full px-3 py-2 bg-slate-700/40 border border-blue-400/30 rounded-lg text-white placeholder-blue-200/50 focus:outline-none focus:ring-2 focus:ring-blue-400 backdrop-blur-sm"
+                      className="w-full px-3 py-2 bg-gray-800/60 border border-gray-600/40 rounded-lg text-white placeholder-gray-400/50 focus:outline-none focus:ring-2 focus:ring-indigo-500 backdrop-blur-sm"
                     />
                     <input
                       type="number"
                       placeholder="Max"
                       value={filters.maxYear}
                       onChange={(e) => setFilters(prev => ({ ...prev, maxYear: e.target.value }))}
-                      className="w-full px-3 py-2 bg-slate-700/40 border border-blue-400/30 rounded-lg text-white placeholder-blue-200/50 focus:outline-none focus:ring-2 focus:ring-blue-400 backdrop-blur-sm"
+                      className="w-full px-3 py-2 bg-gray-800/60 border border-gray-600/40 rounded-lg text-white placeholder-gray-400/50 focus:outline-none focus:ring-2 focus:ring-indigo-500 backdrop-blur-sm"
                     />
                   </div>
                 </div>
 
                 {/* Yakıt Tipi Filter */}
                 <div className="mb-6">
-                  <label className="block text-blue-100/90 font-semibold text-sm mb-3">
+                  <label className="block text-gray-300/90 font-semibold text-sm mb-3">
                     Yakıt Tipi
                   </label>
                   <div className="space-y-3">
@@ -286,7 +286,7 @@ export default function ListingsPage() {
                       <label key={fuel.value} className="flex items-center cursor-pointer group">
                         <input
                           type="checkbox"
-                          className="mr-3 w-4 h-4 text-blue-600 bg-slate-700/40 border-blue-400/30 rounded focus:ring-blue-500 focus:ring-2"
+                          className="mr-3 w-4 h-4 text-indigo-600 bg-gray-800/60 border-gray-600/40 rounded focus:ring-indigo-500 focus:ring-2"
                           checked={filters.fuelType.includes(fuel.value)}
                           onChange={(e) => {
                             setFilters(prev => ({
@@ -297,7 +297,7 @@ export default function ListingsPage() {
                             }))
                           }}
                         />
-                        <span className="text-blue-100/80 group-hover:text-white font-medium transition-colors">{fuel.label}</span>
+                        <span className="text-gray-300/80 group-hover:text-white font-medium transition-colors">{fuel.label}</span>
                       </label>
                     ))}
                   </div>
@@ -305,32 +305,32 @@ export default function ListingsPage() {
 
                 {/* Sıralama Filter */}
                 <div className="mb-6">
-                  <label className="block text-blue-100/90 font-semibold text-sm mb-3">
+                  <label className="block text-gray-300/90 font-semibold text-sm mb-3">
                     Sıralama
                   </label>
                   <select
-                    className="w-full px-4 py-3 bg-slate-700/40 border border-blue-400/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 backdrop-blur-sm"
+                    className="w-full px-4 py-3 bg-gray-800/60 border border-gray-600/40 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 backdrop-blur-sm"
                     value={filters.sortBy}
                     onChange={(e) => setFilters(prev => ({ ...prev, sortBy: e.target.value }))}
                   >
-                    <option value="-created_at" className="bg-slate-800 text-white">En yeni yüklenen</option>
-                    <option value="created_at" className="bg-slate-800 text-white">En eski yüklenen</option>
-                    <option value="price" className="bg-slate-800 text-white">Fiyat (Düşükten Yükseğe)</option>
-                    <option value="-price" className="bg-slate-800 text-white">Fiyat (Yüksekten Düşüğe)</option>
-                    <option value="car__year" className="bg-slate-800 text-white">Yıl (Eskiden Yeniye)</option>
-                    <option value="-car__year" className="bg-slate-800 text-white">Yıl (Yeniden Eskiye)</option>
-                    <option value="car__mileage" className="bg-slate-800 text-white">Kilometre (Az - Çok)</option>
-                    <option value="-car__mileage" className="bg-slate-800 text-white">Kilometre (Çok - Az)</option>
+                    <option value="-created_at" className="bg-gray-900 text-white">En yeni yüklenen</option>
+                    <option value="created_at" className="bg-gray-900 text-white">En eski yüklenen</option>
+                    <option value="price" className="bg-gray-900 text-white">Fiyat (Düşükten Yükseğe)</option>
+                    <option value="-price" className="bg-gray-900 text-white">Fiyat (Yüksekten Düşüğe)</option>
+                    <option value="car__year" className="bg-gray-900 text-white">Yıl (Eskiden Yeniye)</option>
+                    <option value="-car__year" className="bg-gray-900 text-white">Yıl (Yeniden Eskiye)</option>
+                    <option value="car__mileage" className="bg-gray-900 text-white">Kilometre (Az - Çok)</option>
+                    <option value="-car__mileage" className="bg-gray-900 text-white">Kilometre (Çok - Az)</option>
                   </select>
                 </div>
 
                 {/* Donanım Filter */}
                 <div className="mb-6">
-                  <label className="block text-blue-100/90 font-semibold text-sm mb-3">
+                  <label className="block text-gray-300/90 font-semibold text-sm mb-3">
                     Donanım
                   </label>
                   <select
-                    className="w-full px-4 py-3 bg-slate-700/40 border border-blue-400/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 backdrop-blur-sm"
+                    className="w-full px-4 py-3 bg-gray-800/60 border border-gray-600/40 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 backdrop-blur-sm"
                     onChange={(e) => {
                       const value = e.target.value
                       setFilters(prev => ({ 
@@ -339,18 +339,18 @@ export default function ListingsPage() {
                       }))
                     }}
                   >
-                    <option value="" className="bg-slate-800 text-white">Tüm Donanımlar</option>
+                    <option value="" className="bg-gray-900 text-white">Tüm Donanımlar</option>
                     {/* Variants will be loaded dynamically */}
                   </select>
                 </div>
 
                 {/* Trim Filter */}
                 <div className="mb-6">
-                  <label className="block text-blue-100/90 font-semibold text-sm mb-3">
+                  <label className="block text-gray-300/90 font-semibold text-sm mb-3">
                     Trim
                   </label>
                   <select
-                    className="w-full px-4 py-3 bg-slate-700/40 border border-blue-400/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 backdrop-blur-sm"
+                    className="w-full px-4 py-3 bg-gray-800/60 border border-gray-600/40 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 backdrop-blur-sm"
                     onChange={(e) => {
                       const value = e.target.value
                       setFilters(prev => ({ 
@@ -359,22 +359,22 @@ export default function ListingsPage() {
                       }))
                     }}
                   >
-                    <option value="" className="bg-slate-800 text-white">Tüm Trimler</option>
+                    <option value="" className="bg-gray-900 text-white">Tüm Trimler</option>
                     {/* Trims will be loaded dynamically */}
                   </select>
                 </div>
 
                 {/* Action Buttons */}
-                <div className="space-y-3 pt-4 border-t border-blue-400/20">
+                <div className="space-y-3 pt-4 border-t border-gray-600/40">
                   <button
                     onClick={applyFilters}
-                    className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-3 rounded-xl hover:from-blue-700 hover:to-cyan-700 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl"
+                    className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl"
                   >
                     Filtrele
                   </button>
                   <button
                     onClick={clearAllFilters}
-                    className="w-full bg-slate-700/40 text-white py-3 rounded-xl hover:bg-slate-600/40 transition-colors border border-blue-400/20"
+                    className="w-full bg-gray-800/60 text-white py-3 rounded-xl hover:bg-gray-700/60 transition-colors border border-gray-600/40"
                   >
                     Temizle
                   </button>
@@ -445,12 +445,12 @@ export default function ListingsPage() {
 function ListingCard({ listing }: { listing: Listing }) {
   return (
     <Link href={`/listings/${listing.id}`} className="group block">
-      <div className="bg-slate-800/40 rounded-2xl overflow-hidden hover:bg-slate-700/50 transition-colors duration-200 hover:shadow-xl border border-blue-500/20 hover:border-blue-400/40">
+      <div className="bg-gray-900/60 rounded-2xl overflow-hidden hover:bg-gray-800/70 transition-colors duration-200 hover:shadow-xl border border-gray-700/40 hover:border-gray-600/50">
         
         <div className="flex h-64">
           {/* Image Section - Optimized */}
           <div className="w-80 flex-shrink-0">
-            <div className="relative w-full h-full overflow-hidden bg-slate-700/20">
+            <div className="relative w-full h-full overflow-hidden bg-gray-800/40">
               {listing.primary_image ? (
                 <img
                   src={listing.primary_image.thumbnail_url}
@@ -459,8 +459,8 @@ function ListingCard({ listing }: { listing: Listing }) {
                   loading="lazy"
                 />
               ) : (
-                <div className="w-full h-full bg-gradient-to-br from-slate-700/20 to-blue-600/20 flex items-center justify-center">
-                  <TruckIcon className="h-16 w-16 text-blue-300/40" />
+                <div className="w-full h-full bg-gradient-to-br from-gray-800/40 to-gray-900/60 flex items-center justify-center">
+                  <TruckIcon className="h-16 w-16 text-gray-500/40" />
                 </div>
               )}
             </div>
@@ -470,12 +470,12 @@ function ListingCard({ listing }: { listing: Listing }) {
           <div className="flex-1 p-6 flex flex-col justify-between">
             {/* Header Section */}
             <div>
-              <h3 className="text-xl font-bold text-white mb-3 group-hover:text-cyan-300 transition-colors duration-200 line-clamp-2 leading-tight">
+              <h3 className="text-xl font-bold text-white mb-3 group-hover:text-indigo-300 transition-colors duration-200 line-clamp-2 leading-tight">
                 {listing.title}
               </h3>
               
               {/* Car Details */}
-              <div className="flex items-center gap-4 mb-4 text-sm text-blue-200/70">
+              <div className="flex items-center gap-4 mb-4 text-sm text-gray-400/70">
                 <div className="flex items-center gap-2">
                   <TruckIcon className="h-4 w-4 flex-shrink-0" />
                   <span className="font-medium">{listing.car.brand.name} {listing.car.model.name}</span>
@@ -491,26 +491,26 @@ function ListingCard({ listing }: { listing: Listing }) {
               </div>
               
               {/* Specifications - Simplified */}
-              <div className="flex items-center gap-4 text-sm text-blue-200/50">
-                <span className="bg-slate-700/40 px-2 py-1 rounded text-xs">
+              <div className="flex items-center gap-4 text-sm text-gray-400/50">
+                <span className="bg-gray-800/60 px-2 py-1 rounded text-xs">
                   {new Intl.NumberFormat('tr-TR').format(listing.car.mileage)} km
                 </span>
-                <span className="bg-slate-700/40 px-2 py-1 rounded text-xs">
+                <span className="bg-gray-800/60 px-2 py-1 rounded text-xs">
                   {getFuelTypeLabel(listing.car.fuel_type)}
                 </span>
-                <span className="bg-slate-700/40 px-2 py-1 rounded text-xs">
+                <span className="bg-gray-800/60 px-2 py-1 rounded text-xs">
                   {getTransmissionLabel(listing.car.transmission)}
                 </span>
               </div>
             </div>
             
             {/* Footer Section */}
-            <div className="flex justify-between items-end pt-4 border-t border-blue-500/20">
-              <div className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+            <div className="flex justify-between items-end pt-4 border-t border-gray-700/40">
+              <div className="text-2xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
                 {formatPrice(listing.price)}
               </div>
               
-              <div className="flex items-center text-blue-300/60 text-sm group-hover:text-cyan-300 transition-colors bg-blue-500/10 px-3 py-2 rounded-lg">
+              <div className="flex items-center text-gray-400/60 text-sm group-hover:text-indigo-300 transition-colors bg-indigo-500/10 px-3 py-2 rounded-lg">
                 <EyeIcon className="h-4 w-4 mr-2" />
                 <span className="font-medium">Detayları İncele</span>
               </div>

@@ -121,14 +121,14 @@ export default function HomePage() {
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-blue-900 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-slate-950 to-black relative overflow-hidden">
       {/* Simplified Background - Performance Optimized */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {/* Single subtle gradient instead of animated circles */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 via-transparent to-cyan-600/5"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-indigo-950/20 via-transparent to-purple-950/10"></div>
         
         {/* Static grid pattern */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(59,130,246,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.03)_1px,transparent_1px)] bg-[size:20px_20px]"></div>
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(79,70,229,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(79,70,229,0.02)_1px,transparent_1px)] bg-[size:20px_20px]"></div>
       </div>
       
       <Header />
@@ -153,21 +153,21 @@ export default function HomePage() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 bg-slate-800/20 backdrop-blur-sm">
+      <section className="py-16 bg-gray-900/20 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {[
-              { title: '50,000+', description: 'Aktif Kullanıcı', icon: '👤', color: 'from-blue-600 to-cyan-600' },
-              { title: '100,000+', description: 'Aylık İlan Görüntüleme', icon: '👁️', color: 'from-cyan-600 to-blue-600' },
-              { title: '15,000+', description: 'Başarılı Satış', icon: '✅', color: 'from-slate-600 to-blue-600' },
-              { title: '4.8/5', description: 'Kullanıcı Memnuniyeti', icon: '⭐', color: 'from-blue-500 to-cyan-500' }
+              { title: '50,000+', description: 'Aktif Kullanıcı', icon: '👤', color: 'from-indigo-600 to-purple-600' },
+              { title: '100,000+', description: 'Aylık İlan Görüntüleme', icon: '👁️', color: 'from-purple-600 to-indigo-600' },
+              { title: '15,000+', description: 'Başarılı Satış', icon: '✅', color: 'from-gray-600 to-indigo-600' },
+              { title: '4.8/5', description: 'Kullanıcı Memnuniyeti', icon: '⭐', color: 'from-indigo-500 to-purple-500' }
             ].map((stat, index) => (
               <div key={index} className="text-center">
                 <div className={`w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-r ${stat.color} flex items-center justify-center text-2xl shadow-lg`}>
                   {stat.icon}
                 </div>
                 <div className="text-3xl font-bold text-white mb-2">{stat.title}</div>
-                <div className="text-blue-100/70">{stat.description}</div>
+                <div className="text-gray-400/70">{stat.description}</div>
               </div>
             ))}
           </div>
@@ -190,7 +190,7 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {recentListings.map((listing) => (
               <Link key={listing.id} href={`/listings/${listing.id}`} className="group">
-                <div className="bg-slate-800/40 rounded-2xl overflow-hidden hover:bg-slate-700/50 transition-colors duration-200 hover:shadow-xl border border-blue-500/20 h-80">
+                <div className="bg-gray-900/60 rounded-2xl overflow-hidden hover:bg-gray-800/70 transition-colors duration-200 hover:shadow-xl border border-gray-700/40 h-80">
                   <div className="relative h-48 overflow-hidden">
                     {listing.primary_image ? (
                       <img
@@ -200,8 +200,8 @@ export default function HomePage() {
                         loading="lazy"
                       />
                     ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-slate-700/20 to-blue-600/20 flex items-center justify-center">
-                        <svg className="h-12 w-12 text-blue-300/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <div className="w-full h-full bg-gradient-to-br from-gray-800/40 to-gray-900/60 flex items-center justify-center">
+                        <svg className="h-12 w-12 text-gray-500/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
                         </svg>
                       </div>
@@ -210,19 +210,19 @@ export default function HomePage() {
                   
                   <div className="p-4 h-32 flex flex-col justify-between">
                     <div className="flex-1">
-                      <h3 className="font-bold text-white mb-2 group-hover:text-cyan-300 transition-colors duration-200 text-sm line-clamp-1 leading-tight">
+                      <h3 className="font-bold text-white mb-2 group-hover:text-indigo-300 transition-colors duration-200 text-sm line-clamp-1 leading-tight">
                         {listing.title}
                       </h3>
-                      <div className="text-xs text-blue-200/70 mb-3 truncate">
+                      <div className="text-xs text-gray-400/70 mb-3 truncate">
                         {listing.car.brand.name} {listing.car.model.name} • {listing.car.year}
                       </div>
                     </div>
                     
                     <div className="flex justify-between items-end">
-                      <div className="text-base font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+                      <div className="text-base font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
                         {formatPrice(listing.price)}
                       </div>
-                      <div className="text-xs text-blue-300/50">
+                      <div className="text-xs text-gray-500/50">
                         {formatRelativeTime(listing.created_at)}
                       </div>
                     </div>
@@ -235,13 +235,13 @@ export default function HomePage() {
       </section>
 
       {/* Premium Listings */}
-      <section className="py-16 bg-slate-800/20 backdrop-blur-sm">
+      <section className="py-16 bg-gray-900/20 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-3xl font-bold text-white">Premium İlanlar</h2>
             <Link 
               href="/listings?min_price=15000000" 
-              className="text-cyan-300 hover:text-white transition-colors font-medium"
+              className="text-indigo-300 hover:text-white transition-colors font-medium"
             >
               Tümünü Gör →
             </Link>
@@ -663,26 +663,26 @@ function AdvancedSearchForm() {
 
   return (
     <div className="max-w-5xl mx-auto">
-      <form onSubmit={handleSearch} className="bg-slate-800/30 backdrop-blur-xl rounded-2xl p-6 border border-blue-500/20 shadow-2xl">
+      <form onSubmit={handleSearch} className="bg-gray-900/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-700/50 shadow-2xl">
         
         {/* Multi-Row Search Section */}
         <div className="space-y-4 mb-6">
           {searchData.searchRows.map((row, index) => (
-            <div key={row.id} className="flex items-center gap-3 p-4 bg-slate-700/20 rounded-xl border border-blue-400/20">
+            <div key={row.id} className="flex items-center gap-3 p-4 bg-gray-800/40 rounded-xl border border-gray-600/30">
               
               {/* Marka */}
               <div className="flex-1">
                 <select
                   value={row.brand || ''}
-                  className="w-full bg-slate-700/40 text-white placeholder-blue-200/60 border border-blue-400/30 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  className="w-full bg-gray-800/60 text-white placeholder-gray-300/60 border border-gray-600/40 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                   onChange={(e) => {
                     const brandId = e.target.value
                     handleBrandChangeForRow(row.id, brandId)
                   }}
                 >
-                  <option value="" className="bg-slate-800 text-white">Marka</option>
+                  <option value="" className="bg-gray-900 text-white">Marka</option>
                   {brands.map((brand: any) => (
-                    <option key={brand.id} value={brand.id} className="bg-slate-800 text-white">
+                    <option key={brand.id} value={brand.id} className="bg-gray-900 text-white">
                       {brand.name}
                     </option>
                   ))}
@@ -693,16 +693,16 @@ function AdvancedSearchForm() {
               <div className="flex-1">
                 <select
                   value={row.model || ''}
-                  className="w-full bg-slate-700/40 text-white placeholder-blue-200/60 border border-blue-400/30 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  className="w-full bg-gray-800/60 text-white placeholder-gray-300/60 border border-gray-600/40 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                   disabled={!modelsPerRow[row.id]?.length}
                   onChange={(e) => {
                     const modelId = e.target.value
                     handleModelChangeForRow(row.id, modelId)
                   }}
                 >
-                  <option value="" className="bg-slate-800 text-white">Model</option>
+                  <option value="" className="bg-gray-900 text-white">Model</option>
                   {modelsPerRow[row.id]?.map((model: any) => (
-                    <option key={model.id} value={model.id} className="bg-slate-800 text-white">
+                    <option key={model.id} value={model.id} className="bg-gray-900 text-white">
                       {model.name}
                     </option>
                   ))}
@@ -713,16 +713,16 @@ function AdvancedSearchForm() {
               <div className="flex-1">
                 <select
                   value={row.variant || ''}
-                  className="w-full bg-slate-700/40 text-white placeholder-blue-200/60 border border-blue-400/30 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  className="w-full bg-gray-800/60 text-white placeholder-gray-300/60 border border-gray-600/40 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                   disabled={!variantsPerRow[row.id]?.length}
                   onChange={(e) => {
                     const variantId = e.target.value
                     handleVariantChangeForRow(row.id, variantId)
                   }}
                 >
-                  <option value="" className="bg-slate-800 text-white">Donanım</option>
+                  <option value="" className="bg-gray-900 text-white">Donanım</option>
                   {variantsPerRow[row.id]?.map((variant: any) => (
-                    <option key={variant.id} value={variant.id} className="bg-slate-800 text-white">
+                    <option key={variant.id} value={variant.id} className="bg-gray-900 text-white">
                       {variant.name}
                     </option>
                   ))}
@@ -733,16 +733,16 @@ function AdvancedSearchForm() {
               <div className="flex-1">
                 <select
                   value={row.trim || ''}
-                  className="w-full bg-slate-700/40 text-white placeholder-blue-200/60 border border-blue-400/30 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  className="w-full bg-gray-800/60 text-white placeholder-gray-300/60 border border-gray-600/40 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                   disabled={!trimsPerRow[row.id]?.length}
                   onChange={(e) => {
                     const trimId = e.target.value
                     updateSearchRow(row.id, 'trim', trimId ? parseInt(trimId) : null)
                   }}
                 >
-                  <option value="" className="bg-slate-800 text-white">Trim</option>
+                  <option value="" className="bg-gray-900 text-white">Trim</option>
                   {trimsPerRow[row.id]?.map((trim: any) => (
-                    <option key={trim.id} value={trim.id} className="bg-slate-800 text-white">
+                    <option key={trim.id} value={trim.id} className="bg-gray-900 text-white">
                       {trim.name}
                     </option>
                   ))}
@@ -754,7 +754,7 @@ function AdvancedSearchForm() {
                 <button
                   type="button"
                   onClick={() => removeSearchRow(row.id)}
-                  className="p-2 text-blue-200/60 hover:text-red-400 hover:bg-red-500/20 rounded-lg transition-colors"
+                  className="p-2 text-gray-400/60 hover:text-red-400 hover:bg-red-500/20 rounded-lg transition-colors"
                   title="Bu arama satırını kaldır"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -769,7 +769,7 @@ function AdvancedSearchForm() {
           <button
             type="button"
             onClick={addSearchRow}
-            className="w-full p-3 border-2 border-dashed border-blue-400/30 rounded-xl text-blue-200/60 hover:text-white hover:border-blue-400/50 transition-colors flex items-center justify-center gap-2"
+            className="w-full p-3 border-2 border-dashed border-gray-600/40 rounded-xl text-gray-400/60 hover:text-white hover:border-gray-500/60 transition-colors flex items-center justify-center gap-2"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -786,7 +786,7 @@ function AdvancedSearchForm() {
               placeholder="Min Fiyat"
               value={searchData.minPrice}
               onChange={(e) => setSearchData(prev => ({ ...prev, minPrice: e.target.value }))}
-              className="w-full bg-slate-700/40 text-white placeholder-blue-200/60 border border-blue-400/30 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full bg-gray-800/60 text-white placeholder-gray-300/60 border border-gray-600/40 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
           <div>
@@ -795,7 +795,7 @@ function AdvancedSearchForm() {
               placeholder="Max Fiyat"
               value={searchData.maxPrice}
               onChange={(e) => setSearchData(prev => ({ ...prev, maxPrice: e.target.value }))}
-              className="w-full bg-slate-700/40 text-white placeholder-blue-200/60 border border-blue-400/30 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full bg-gray-800/60 text-white placeholder-gray-300/60 border border-gray-600/40 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
           <div>
@@ -804,7 +804,7 @@ function AdvancedSearchForm() {
               placeholder="Min Yıl"
               value={searchData.minYear}
               onChange={(e) => setSearchData(prev => ({ ...prev, minYear: e.target.value }))}
-              className="w-full bg-slate-700/40 text-white placeholder-blue-200/60 border border-blue-400/30 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full bg-gray-800/60 text-white placeholder-gray-300/60 border border-gray-600/40 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
           <div>
@@ -813,7 +813,7 @@ function AdvancedSearchForm() {
               placeholder="Max Yıl"
               value={searchData.maxYear}
               onChange={(e) => setSearchData(prev => ({ ...prev, maxYear: e.target.value }))}
-              className="w-full bg-slate-700/40 text-white placeholder-blue-200/60 border border-blue-400/30 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full bg-gray-800/60 text-white placeholder-gray-300/60 border border-gray-600/40 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
           <div>
@@ -822,7 +822,7 @@ function AdvancedSearchForm() {
               placeholder="Min KM"
               value={searchData.minMileage}
               onChange={(e) => setSearchData(prev => ({ ...prev, minMileage: e.target.value }))}
-              className="w-full bg-slate-700/40 text-white placeholder-blue-200/60 border border-blue-400/30 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full bg-gray-800/60 text-white placeholder-gray-300/60 border border-gray-600/40 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
           <div>
@@ -831,7 +831,7 @@ function AdvancedSearchForm() {
               placeholder="Max KM"
               value={searchData.maxMileage}
               onChange={(e) => setSearchData(prev => ({ ...prev, maxMileage: e.target.value }))}
-              className="w-full bg-slate-700/40 text-white placeholder-blue-200/60 border border-blue-400/30 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full bg-gray-800/60 text-white placeholder-gray-300/60 border border-gray-600/40 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
         </div>
@@ -842,20 +842,20 @@ function AdvancedSearchForm() {
             <select
               value={searchData.fuelType}
               onChange={(e) => setSearchData(prev => ({ ...prev, fuelType: e.target.value }))}
-              className="w-full bg-slate-700/40 text-white placeholder-blue-200/60 border border-blue-400/30 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full bg-gray-800/60 text-white placeholder-gray-300/60 border border-gray-600/40 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
-              <option value="" className="bg-slate-800 text-white">Yakıt Tipi</option>
-              <option value="petrol" className="bg-slate-800 text-white">Benzin</option>
-              <option value="diesel" className="bg-slate-800 text-white">Dizel</option>
-              <option value="electric" className="bg-slate-800 text-white">Elektrik</option>
-              <option value="hybrid" className="bg-slate-800 text-white">Hibrit</option>
+              <option value="" className="bg-gray-900 text-white">Yakıt Tipi</option>
+              <option value="petrol" className="bg-gray-900 text-white">Benzin</option>
+              <option value="diesel" className="bg-gray-900 text-white">Dizel</option>
+              <option value="electric" className="bg-gray-900 text-white">Elektrik</option>
+              <option value="hybrid" className="bg-gray-900 text-white">Hibrit</option>
             </select>
           </div>
 
           <div className="flex gap-3">
             <button
               type="submit"
-              className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
+              className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
             >
               Ara
             </button>
@@ -877,7 +877,7 @@ function AdvancedSearchForm() {
                 setVariantsPerRow({})
                 setTrimsPerRow({})
               }}
-              className="text-blue-200/60 hover:text-white transition-colors text-sm px-4"
+              className="text-gray-400/60 hover:text-white transition-colors text-sm px-4"
             >
               Temizle
             </button>
@@ -896,7 +896,7 @@ function AdvancedSearchForm() {
                 handleBrandChangeForRow(searchData.searchRows[0].id, brandObj.id.toString())
               }
             }}
-            className="px-6 py-2 bg-slate-700/20 text-blue-100/80 rounded-lg hover:bg-slate-600/30 hover:text-white transition-all duration-300 border border-blue-400/20 backdrop-blur-sm"
+            className="px-6 py-2 bg-gray-800/40 text-gray-300/80 rounded-lg hover:bg-gray-700/40 hover:text-white transition-all duration-300 border border-gray-600/30 backdrop-blur-sm"
           >
             {brand}
           </button>

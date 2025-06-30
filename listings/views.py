@@ -2,6 +2,7 @@ from django.shortcuts import render
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.pagination import PageNumberPagination
 from .models import Listing, ListingImage
 from .serializers import (
     ListingSerializer,
@@ -19,11 +20,17 @@ from django.db.models import Q
 from functools import reduce
 import operator
 
+class ListingPagination(PageNumberPagination):
+    page_size = 12
+    page_size_query_param = 'page_size'
+    max_page_size = 50
+
 class ListingViewSet(viewsets.ModelViewSet):
     queryset = Listing.objects.all()
     serializer_class = ListingSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]  
     # Allow authenticated users to create, update, and delete listings, but allow anyone to read them
+    pagination_class = ListingPagination
 
     filter_backends = [
         DjangoFilterBackend,

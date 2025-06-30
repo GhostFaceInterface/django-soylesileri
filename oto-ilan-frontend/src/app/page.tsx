@@ -122,14 +122,13 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-blue-900 relative overflow-hidden">
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-600/20 to-cyan-600/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute top-40 -left-40 w-96 h-96 bg-gradient-to-br from-cyan-500/15 to-blue-500/15 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute bottom-40 right-20 w-72 h-72 bg-gradient-to-br from-slate-600/20 to-gray-600/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '4s' }}></div>
+      {/* Simplified Background - Performance Optimized */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* Single subtle gradient instead of animated circles */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 via-transparent to-cyan-600/5"></div>
         
-        {/* Subtle grid pattern */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(59,130,246,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.05)_1px,transparent_1px)] bg-[size:20px_20px]"></div>
+        {/* Static grid pattern */}
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(59,130,246,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.03)_1px,transparent_1px)] bg-[size:20px_20px]"></div>
       </div>
       
       <Header />
@@ -191,13 +190,14 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {recentListings.map((listing) => (
               <Link key={listing.id} href={`/listings/${listing.id}`} className="group">
-                <div className="bg-slate-800/30 backdrop-blur-xl rounded-2xl overflow-hidden hover:bg-slate-700/40 transition-all duration-300 hover:shadow-2xl hover:scale-105 border border-blue-500/20 h-80">
+                <div className="bg-slate-800/40 rounded-2xl overflow-hidden hover:bg-slate-700/50 transition-colors duration-200 hover:shadow-xl border border-blue-500/20 h-80">
                   <div className="relative h-48 overflow-hidden">
                     {listing.primary_image ? (
                       <img
                         src={listing.primary_image.thumbnail_url}
                         alt={listing.title}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-102"
+                        loading="lazy"
                       />
                     ) : (
                       <div className="w-full h-full bg-gradient-to-br from-slate-700/20 to-blue-600/20 flex items-center justify-center">
@@ -206,12 +206,11 @@ export default function HomePage() {
                         </svg>
                       </div>
                     )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   </div>
                   
                   <div className="p-4 h-32 flex flex-col justify-between">
                     <div className="flex-1">
-                      <h3 className="font-bold text-white mb-2 group-hover:text-cyan-300 transition-colors text-sm line-clamp-1 leading-tight">
+                      <h3 className="font-bold text-white mb-2 group-hover:text-cyan-300 transition-colors duration-200 text-sm line-clamp-1 leading-tight">
                         {listing.title}
                       </h3>
                       <div className="text-xs text-blue-200/70 mb-3 truncate">
@@ -251,7 +250,7 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {premiumListings.map((listing) => (
               <Link key={listing.id} href={`/listings/${listing.id}`} className="group">
-                <div className="bg-gradient-to-br from-amber-500/10 to-orange-500/10 backdrop-blur-xl rounded-2xl overflow-hidden hover:from-amber-500/15 hover:to-orange-500/15 transition-all duration-300 hover:shadow-2xl hover:shadow-amber-500/20 hover:scale-105 border border-amber-500/30 h-80">
+                <div className="bg-gradient-to-br from-amber-500/10 to-orange-500/10 rounded-2xl overflow-hidden hover:from-amber-500/15 hover:to-orange-500/15 transition-colors duration-200 hover:shadow-xl border border-amber-500/30 h-80">
                   <div className="relative h-48 overflow-hidden">
                     <div className="absolute top-2 left-2 z-10">
                       <span className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold px-2 py-1 rounded-lg shadow-lg">
@@ -262,7 +261,8 @@ export default function HomePage() {
                       <img
                         src={listing.primary_image.thumbnail_url}
                         alt={listing.title}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-102"
+                        loading="lazy"
                       />
                     ) : (
                       <div className="w-full h-full bg-gradient-to-br from-amber-500/20 to-orange-500/20 flex items-center justify-center">
@@ -275,7 +275,7 @@ export default function HomePage() {
                   
                   <div className="p-4 h-32 flex flex-col justify-between">
                     <div className="flex-1">
-                      <h3 className="font-bold text-white mb-2 group-hover:text-amber-300 transition-colors text-sm line-clamp-1 leading-tight">
+                      <h3 className="font-bold text-white mb-2 group-hover:text-amber-300 transition-colors duration-200 text-sm line-clamp-1 leading-tight">
                         {listing.title}
                       </h3>
                       <div className="text-xs text-amber-200/70 mb-3 truncate">

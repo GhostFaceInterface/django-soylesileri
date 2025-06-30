@@ -324,3 +324,5 @@ ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
 # Custom adapter for API responses
 ACCOUNT_ADAPTER = 'users.adapters.DefaultAccountAdapter'
 SOCIALACCOUNT_ADAPTER = 'users.adapters.DefaultSocialAccountAdapter'
+PAGINATION_SIZE = 12
+DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880

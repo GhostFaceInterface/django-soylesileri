@@ -162,14 +162,13 @@ export default function ListingsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-blue-900 relative overflow-hidden">
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-600/20 to-cyan-600/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute top-40 -left-40 w-96 h-96 bg-gradient-to-br from-cyan-500/15 to-blue-500/15 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute bottom-40 right-20 w-72 h-72 bg-gradient-to-br from-slate-600/20 to-gray-600/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '4s' }}></div>
+      {/* Simplified Background - Performance Optimized */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* Single subtle gradient instead of 3 animated circles */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 via-transparent to-cyan-600/5"></div>
         
-        {/* Subtle grid pattern */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(59,130,246,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.05)_1px,transparent_1px)] bg-[size:20px_20px]"></div>
+        {/* Static grid pattern instead of animated */}
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(59,130,246,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.03)_1px,transparent_1px)] bg-[size:20px_20px]"></div>
       </div>
       
       <Header />
@@ -197,7 +196,7 @@ export default function ListingsPage() {
         <div className="flex gap-8">
           {/* Sidebar Filters */}
           <div className={`${showFilters ? 'block' : 'hidden'} md:block md:w-80 flex-shrink-0`}>
-            <div className="bg-slate-800/30 backdrop-blur-xl rounded-2xl p-6 shadow-2xl sticky top-24 border border-blue-500/20">
+            <div className="bg-slate-800/50 rounded-2xl p-6 shadow-xl sticky top-24 border border-blue-500/20">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-bold text-white">Filtreler</h3>
                 <button
@@ -389,24 +388,24 @@ export default function ListingsPage() {
             {loading ? (
               <div className="space-y-3">
                 {[...Array(6)].map((_, i) => (
-                  <div key={i} className="bg-slate-800/30 backdrop-blur-xl rounded-2xl overflow-hidden border border-blue-500/20">
+                  <div key={i} className="bg-slate-800/40 rounded-2xl overflow-hidden border border-blue-500/20">
                     <div className="flex h-64">
                       <div className="w-80 flex-shrink-0">
                         <div className="w-full h-full bg-slate-700/40 animate-pulse"></div>
                       </div>
                       <div className="flex-1 p-6">
-                        <div className="space-y-3 animate-pulse">
-                          <div className="h-6 bg-slate-700/40 rounded w-3/4"></div>
-                          <div className="h-4 bg-slate-700/40 rounded w-1/2"></div>
-                          <div className="h-4 bg-slate-700/40 rounded w-2/3"></div>
+                        <div className="space-y-3">
+                          <div className="h-6 bg-slate-700/40 rounded w-3/4 animate-pulse"></div>
+                          <div className="h-4 bg-slate-700/40 rounded w-1/2 animate-pulse"></div>
+                          <div className="h-4 bg-slate-700/40 rounded w-2/3 animate-pulse"></div>
                           <div className="flex gap-3 mt-4">
-                            <div className="h-8 bg-slate-700/40 rounded w-20"></div>
-                            <div className="h-8 bg-slate-700/40 rounded w-16"></div>
-                            <div className="h-8 bg-slate-700/40 rounded w-18"></div>
+                            <div className="h-6 bg-slate-700/40 rounded w-16 animate-pulse"></div>
+                            <div className="h-6 bg-slate-700/40 rounded w-12 animate-pulse"></div>
+                            <div className="h-6 bg-slate-700/40 rounded w-14 animate-pulse"></div>
                           </div>
                           <div className="flex justify-between items-end pt-6">
-                            <div className="h-8 bg-slate-700/40 rounded w-32"></div>
-                            <div className="h-8 bg-slate-700/40 rounded w-24"></div>
+                            <div className="h-8 bg-slate-700/40 rounded w-32 animate-pulse"></div>
+                            <div className="h-6 bg-slate-700/40 rounded w-24 animate-pulse"></div>
                           </div>
                         </div>
                       </div>
@@ -442,38 +441,36 @@ export default function ListingsPage() {
   );
 }
 
-// Vertical Listing Card Component - Professional Design
+// Vertical Listing Card Component - Performance Optimized
 function ListingCard({ listing }: { listing: Listing }) {
   return (
     <Link href={`/listings/${listing.id}`} className="group block">
-      <div className="bg-slate-800/30 backdrop-blur-xl rounded-2xl overflow-hidden hover:bg-slate-700/40 transition-all duration-300 hover:shadow-2xl border border-blue-500/20 hover:border-blue-400/30 hover:scale-[1.01]">
+      <div className="bg-slate-800/40 rounded-2xl overflow-hidden hover:bg-slate-700/50 transition-colors duration-200 hover:shadow-xl border border-blue-500/20 hover:border-blue-400/40">
         
         <div className="flex h-64">
-          {/* Image Section - Professional aspect ratio */}
+          {/* Image Section - Optimized */}
           <div className="w-80 flex-shrink-0">
             <div className="relative w-full h-full overflow-hidden bg-slate-700/20">
               {listing.primary_image ? (
                 <img
                   src={listing.primary_image.thumbnail_url}
                   alt={listing.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-102"
+                  loading="lazy"
                 />
               ) : (
                 <div className="w-full h-full bg-gradient-to-br from-slate-700/20 to-blue-600/20 flex items-center justify-center">
                   <TruckIcon className="h-16 w-16 text-blue-300/40" />
                 </div>
               )}
-              
-              {/* Subtle overlay on hover */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </div>
           </div>
           
-          {/* Content Section - Balanced layout */}
+          {/* Content Section - Simplified */}
           <div className="flex-1 p-6 flex flex-col justify-between">
             {/* Header Section */}
             <div>
-              <h3 className="text-xl font-bold text-white mb-3 group-hover:text-cyan-300 transition-colors duration-300 line-clamp-2 leading-tight">
+              <h3 className="text-xl font-bold text-white mb-3 group-hover:text-cyan-300 transition-colors duration-200 line-clamp-2 leading-tight">
                 {listing.title}
               </h3>
               
@@ -493,27 +490,27 @@ function ListingCard({ listing }: { listing: Listing }) {
                 </div>
               </div>
               
-              {/* Specifications */}
-              <div className="flex items-center gap-6 text-sm text-blue-200/50">
-                <span className="bg-slate-700/30 px-3 py-1 rounded-lg">
+              {/* Specifications - Simplified */}
+              <div className="flex items-center gap-4 text-sm text-blue-200/50">
+                <span className="bg-slate-700/40 px-2 py-1 rounded text-xs">
                   {new Intl.NumberFormat('tr-TR').format(listing.car.mileage)} km
                 </span>
-                <span className="bg-slate-700/30 px-3 py-1 rounded-lg">
+                <span className="bg-slate-700/40 px-2 py-1 rounded text-xs">
                   {getFuelTypeLabel(listing.car.fuel_type)}
                 </span>
-                <span className="bg-slate-700/30 px-3 py-1 rounded-lg">
+                <span className="bg-slate-700/40 px-2 py-1 rounded text-xs">
                   {getTransmissionLabel(listing.car.transmission)}
                 </span>
               </div>
             </div>
             
             {/* Footer Section */}
-            <div className="flex justify-between items-end pt-4 border-t border-blue-500/10">
+            <div className="flex justify-between items-end pt-4 border-t border-blue-500/20">
               <div className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
                 {formatPrice(listing.price)}
               </div>
               
-              <div className="flex items-center text-blue-300/60 text-sm group-hover:text-cyan-300 transition-colors bg-blue-500/10 hover:bg-blue-500/20 px-3 py-2 rounded-lg">
+              <div className="flex items-center text-blue-300/60 text-sm group-hover:text-cyan-300 transition-colors bg-blue-500/10 px-3 py-2 rounded-lg">
                 <EyeIcon className="h-4 w-4 mr-2" />
                 <span className="font-medium">Detayları İncele</span>
               </div>

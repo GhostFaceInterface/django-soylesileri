@@ -2,7 +2,7 @@ import django_filters
 from django.db import models
 import django_filters.widgets
 from .models import Listing
-from cars.models import Car, CarBrand
+from cars.models import Car, CarBrand, CarModel, CarVariant, CarTrim
 from locations.models import City
 
 
@@ -67,6 +67,11 @@ class ListingsFilter(django_filters.FilterSet):
         label="Renk"
     )
 
+    body_type = django_filters.CharFilter(
+        field_name="car__body_type",
+        lookup_expr="icontains",  # case insensitive contains
+        label="Kasa Tipi"
+    )
 
     min_engine_power = django_filters.NumberFilter(
         field_name="car__engine_power",
@@ -91,6 +96,30 @@ class ListingsFilter(django_filters.FilterSet):
         queryset=CarBrand.objects.all(),
         label="Marka",
         widget=django_filters.widgets.CSVWidget,  # Çoklu seçim için CSV widget kullanıyoruz
+    )
+
+    # Multiple model filtering
+    model = django_filters.ModelMultipleChoiceFilter(
+        field_name="car__model",
+        queryset=CarModel.objects.all(),
+        label="Model",
+        widget=django_filters.widgets.CSVWidget,
+    )
+
+    # NEW: Multiple variant filtering (Donanım)
+    variant = django_filters.ModelMultipleChoiceFilter(
+        field_name="car__variant",
+        queryset=CarVariant.objects.all(),
+        label="Donanım",
+        widget=django_filters.widgets.CSVWidget,
+    )
+
+    # NEW: Multiple trim filtering
+    trim = django_filters.ModelMultipleChoiceFilter(
+        field_name="car__trim",
+        queryset=CarTrim.objects.all(),
+        label="Trim",
+        widget=django_filters.widgets.CSVWidget,
     )
 
     title_search = django_filters.CharFilter(
@@ -131,10 +160,14 @@ class ListingsFilter(django_filters.FilterSet):
             "fuel_type",
             "transmission",
             "color",
+            "body_type",
             "min_engine_power",
             "max_engine_power",
             "city",
             "brand",
+            "model",
+            "variant",
+            "trim",
             "title_search",
             "description_search"
         ]

@@ -29,10 +29,10 @@ from rest_framework_simplejwt.views import (
 urlpatterns = [
     path("admin/", admin.site.urls),
     
-    # API routes
+    # API routes - all apps enabled
+    path("api/", include("cars.urls")),
     path("api/", include("users.urls")),
     path("api/", include("locations.urls")),
-    path("api/", include("cars.urls")),
     path("api/", include("listings.urls")),
     path("api/", include("private_messages.urls")),
 

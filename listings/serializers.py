@@ -250,6 +250,7 @@ class ListingSerializer(serializers.ModelSerializer):
     images = ListingImageSerializer(many=True, read_only=True)
     primary_image = serializers.SerializerMethodField()
     image_count = serializers.SerializerMethodField()
+    is_premium = serializers.ReadOnlyField()  # Property'den otomatik gelir
 
     class Meta:
         model = Listing
@@ -262,6 +263,7 @@ class ListingSerializer(serializers.ModelSerializer):
             'price',
             'city',
             'is_active',
+            'is_premium',
             'created_at',
             'updated_at',
             'images',

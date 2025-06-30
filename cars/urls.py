@@ -8,12 +8,25 @@ from .views import (
     )
 from django.urls import path, include
 
-router = DefaultRouter()
-router.register(r'brands', CarBrandViewSet)
-router.register(r'models', CarModelViewSet)
-router.register(r'variants', CarVariantViewSet)
-router.register(r'trims', CarTrimViewSet)
-router.register(r'cars', CarViewSet)
+# Manual URL patterns
 urlpatterns = [
-    path('', include(router.urls)),
+    # Brands
+    path('brands/', CarBrandViewSet.as_view({'get': 'list'}), name='carbrand-list'),
+    path('brands/<int:pk>/', CarBrandViewSet.as_view({'get': 'retrieve'}), name='carbrand-detail'),
+    
+    # Models  
+    path('models/', CarModelViewSet.as_view({'get': 'list'}), name='carmodel-list'),
+    path('models/<int:pk>/', CarModelViewSet.as_view({'get': 'retrieve'}), name='carmodel-detail'),
+    
+    # Variants
+    path('variants/', CarVariantViewSet.as_view({'get': 'list'}), name='carvariant-list'),
+    path('variants/<int:pk>/', CarVariantViewSet.as_view({'get': 'retrieve'}), name='carvariant-detail'),
+    
+    # Trims
+    path('trims/', CarTrimViewSet.as_view({'get': 'list'}), name='cartrim-list'),
+    path('trims/<int:pk>/', CarTrimViewSet.as_view({'get': 'retrieve'}), name='cartrim-detail'),
+    
+    # Cars
+    path('cars/', CarViewSet.as_view({'get': 'list'}), name='car-list'),
+    path('cars/<int:pk>/', CarViewSet.as_view({'get': 'retrieve'}), name='car-detail'),
 ]

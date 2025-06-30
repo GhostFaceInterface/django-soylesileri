@@ -16,6 +16,13 @@ class Listing(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)    
 
+    @property
+    def is_premium(self):
+        """
+        15 milyon ve üzeri araçlar otomatik premium ilan
+        """
+        return self.price >= 15000000
+
     class Meta:
         ordering = ['-created_at']
         verbose_name = 'İlan'

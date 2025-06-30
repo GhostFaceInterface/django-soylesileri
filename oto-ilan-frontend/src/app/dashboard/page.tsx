@@ -25,6 +25,10 @@ import {
   ChevronRightIcon,
   CameraIcon
 } from '@heroicons/react/24/outline'
+import { useRouter } from 'next/navigation'
+import { listingsService } from '@/lib/services/listings'
+import { Listing, Message } from '@/types'
+import toast from 'react-hot-toast'
 
 export default function DashboardPage() {
   const { user, isAuthenticated, loadUser } = useAuthStore()
@@ -347,7 +351,7 @@ export default function DashboardPage() {
       
       <div className="space-y-3">
         {dashboard?.recent_listings?.length ? (
-          dashboard.recent_listings.map((listing) => (
+          dashboard.recent_listings.map((listing: Listing) => (
             <div 
               key={listing.id} 
               className="group relative bg-gradient-to-r from-amber-50/70 to-white/90 rounded-xl p-4 hover:from-amber-100/80 hover:to-amber-50/90 transition-all duration-300 hover:shadow-lg border border-amber-200/40 hover:border-amber-300/60"
@@ -484,7 +488,7 @@ export default function DashboardPage() {
       
       <div className="space-y-3">
         {dashboard?.recent_messages?.length ? (
-          dashboard.recent_messages.map((message) => (
+          dashboard.recent_messages.map((message: Message) => (
             <div 
               key={message.id} 
               className="group relative bg-gradient-to-r from-emerald-50/70 to-white/90 rounded-xl p-4 hover:from-emerald-100/80 hover:to-emerald-50/90 transition-all duration-300 hover:shadow-lg border border-emerald-200/40 hover:border-emerald-300/60"

@@ -129,9 +129,10 @@ export interface Listing {
   car: Car
   title: string
   description: string
-  price: number
+  price: string | number
   city?: City
   is_active: boolean
+  is_premium: boolean
   created_at: string
   updated_at: string
   images: ListingImage[]

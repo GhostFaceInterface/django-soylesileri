@@ -15,6 +15,9 @@ from rest_framework import exceptions
 from .permissions import IsOwnerOrReadOnly
 from core.throttles import ListingCreateThrottle
 from .filters import ListingsFilter
+from django.db.models import Q
+from functools import reduce
+import operator
 
 class ListingViewSet(viewsets.ModelViewSet):
     queryset = Listing.objects.all()
@@ -34,9 +37,44 @@ class ListingViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         queryset = Listing.objects.filter(is_deleted=False)
+        
+        # Handle multi-search for brands and models
+        brands = self.request.query_params.getlist('brand')
+        models = self.request.query_params.getlist('model')
+        variants = self.request.query_params.getlist('variant')
+        trims = self.request.query_params.getlist('trim')
+        
+        # Create search combinations
+        search_conditions = []
+        
+        # If we have multiple search criteria, combine them with OR
+        if brands or models or variants or trims:
+            # Convert string IDs to integers, filter out empty values
+            brand_ids = [int(b) for b in brands if b.strip()]
+            model_ids = [int(m) for m in models if m.strip()]
+            variant_ids = [int(v) for v in variants if v.strip()]
+            trim_ids = [int(t) for t in trims if t.strip()]
+            
+            # Build combinations - this allows for flexible multi-search
+            conditions = []
+            
+            if brand_ids:
+                conditions.append(Q(car__brand__id__in=brand_ids))
+            if model_ids:
+                conditions.append(Q(car__model__id__in=model_ids))
+            if variants:
+                conditions.append(Q(car__variant__id__in=variant_ids))
+            if trim_ids:
+                conditions.append(Q(car__trim__id__in=trim_ids))
+            
+            # Combine all conditions with OR for maximum flexibility
+            if conditions:
+                combined_condition = reduce(operator.or_, conditions)
+                queryset = queryset.filter(combined_condition)
+        
         return queryset.select_related(
             'user', 'car', 'car__brand', 'car__model', 'car__variant', 'city'
-        ).prefetch_related('images')
+        ).prefetch_related('images').distinct()
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)

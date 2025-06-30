@@ -447,7 +447,7 @@ export default function ListingDetailPage() {
             <div className="bg-gradient-to-br from-blue-50/90 to-blue-100/80 backdrop-blur-xl border border-blue-200/40 rounded-2xl p-6 shadow-2xl">
               <div className="text-center mb-6">
                 <div className="text-3xl font-bold text-blue-600 mb-2">
-                  ₺{formatPrice(listing.price)}
+                  {formatPrice(listing.price)}
                 </div>
                 <h1 className="text-xl font-bold text-slate-800 mb-2">{listing.title}</h1>
                 <div className="flex items-center justify-center text-slate-600">

@@ -64,7 +64,7 @@ type ListingFormData = z.infer<typeof listingSchema>
 
 export default function NewListingPage() {
   const router = useRouter()
-  const { user, isAuthenticated } = useAuthStore()
+  const { user, isAuthenticated, isLoading: authLoading } = useAuthStore()
   
   // States
   const [images, setImages] = useState<UploadedImage[]>([])
@@ -89,12 +89,27 @@ export default function NewListingPage() {
   const selectedVariantId = watch('variant_id')
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    // Loading tamamlandıktan sonra auth kontrolü yap
+    if (!authLoading && !isAuthenticated) {
       router.push('/auth/login')
       return
     }
-    loadInitialData()
-  }, [isAuthenticated, router])
+    if (isAuthenticated) {
+      loadInitialData()
+    }
+  }, [isAuthenticated, authLoading, router])
+
+  // Auth loading durumu
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-950 via-slate-950 to-black">
+        <Header />
+        <div className="pt-24 flex items-center justify-center min-h-[80vh]">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-300"></div>
+        </div>
+      </div>
+    )
+  }
 
   // Filter models when brand changes
   useEffect(() => {

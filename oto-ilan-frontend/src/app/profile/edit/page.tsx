@@ -31,7 +31,7 @@ type ProfileForm = z.infer<typeof profileSchema>
 
 export default function ProfileEditPage() {
   const router = useRouter()
-  const { user, isAuthenticated, loadUser } = useAuthStore()
+  const { user, isAuthenticated, isLoading: authLoading, loadUser } = useAuthStore()
   const [isLoading, setIsLoading] = useState(false)
   const [profilePhoto, setProfilePhoto] = useState<File | null>(null)
   const [photoPreview, setPhotoPreview] = useState<string | null>(null)
@@ -46,13 +46,16 @@ export default function ProfileEditPage() {
   })
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    loadUser()
+  }, [loadUser])
+  
+  useEffect(() => {
+    // Loading tamamlandıktan sonra auth kontrolü yap
+    if (!authLoading && !isAuthenticated) {
       router.push('/auth/login')
       return
     }
-    
-    loadUser()
-  }, [isAuthenticated, loadUser, router])
+  }, [isAuthenticated, authLoading, router])
 
   useEffect(() => {
     if (user) {
@@ -67,6 +70,18 @@ export default function ProfileEditPage() {
       }
     }
   }, [user, setValue])
+
+  // Auth loading durumu
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-950 via-slate-950 to-black">
+        <Header />
+        <div className="pt-24 flex items-center justify-center min-h-[80vh]">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-300"></div>
+        </div>
+      </div>
+    )
+  }
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]

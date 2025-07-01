@@ -18,26 +18,41 @@ import Link from 'next/link'
 
 export default function ProfilePhotoPage() {
   const router = useRouter()
-  const { user, isAuthenticated, loadUser } = useAuthStore()
+  const { user, isAuthenticated, isLoading: authLoading, loadUser } = useAuthStore()
   const [isLoading, setIsLoading] = useState(false)
   const [selectedPhoto, setSelectedPhoto] = useState<File | null>(null)
   const [photoPreview, setPhotoPreview] = useState<string | null>(null)
   const [isDragging, setIsDragging] = useState(false)
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    loadUser()
+  }, [loadUser])
+  
+  useEffect(() => {
+    // Loading tamamlandıktan sonra auth kontrolü yap
+    if (!authLoading && !isAuthenticated) {
       router.push('/auth/login')
       return
     }
-    
-    loadUser()
-  }, [isAuthenticated, loadUser, router])
+  }, [isAuthenticated, authLoading, router])
 
   useEffect(() => {
     if (user?.profile_photo) {
       setPhotoPreview(user.profile_photo)
     }
   }, [user])
+
+  // Auth loading durumu
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-950 via-slate-950 to-black">
+        <Header />
+        <div className="pt-24 flex items-center justify-center min-h-[80vh]">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-300"></div>
+        </div>
+      </div>
+    )
+  }
 
   const handlePhotoChange = (file: File) => {
     if (file.size > 5 * 1024 * 1024) { // 5MB limit

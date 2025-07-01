@@ -3,7 +3,7 @@ from django.db import models
 import django_filters.widgets
 from .models import Listing
 from cars.models import Car, CarBrand, CarModel, CarVariant, CarTrim
-from locations.models import City
+from locations.models import Province, District, Neighborhood
 
 
 class ListingsFilter(django_filters.FilterSet):
@@ -85,10 +85,23 @@ class ListingsFilter(django_filters.FilterSet):
         label="Maksimum Motor Gücü"
     )
 
-    city = django_filters.ModelMultipleChoiceFilter(
-        queryset=City.objects.all(),
+    # Yeni location filtreleri
+    province = django_filters.ModelMultipleChoiceFilter(
+        queryset=Province.objects.all(),
         widget=django_filters.widgets.CSVWidget,
-        label="Şehirler",
+        label="İller",
+    )
+    
+    district = django_filters.ModelMultipleChoiceFilter(
+        queryset=District.objects.all(),
+        widget=django_filters.widgets.CSVWidget,
+        label="İlçeler",
+    )
+    
+    neighborhood = django_filters.ModelMultipleChoiceFilter(
+        queryset=Neighborhood.objects.all(),
+        widget=django_filters.widgets.CSVWidget,
+        label="Mahalleler",
     )
 
     brand = django_filters.ModelMultipleChoiceFilter(
@@ -163,7 +176,9 @@ class ListingsFilter(django_filters.FilterSet):
             "body_type",
             "min_engine_power",
             "max_engine_power",
-            "city",
+            "province",
+            "district",
+            "neighborhood",
             "brand",
             "model",
             "variant",

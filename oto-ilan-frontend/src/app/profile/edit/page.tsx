@@ -116,9 +116,9 @@ export default function ProfileEditPage() {
       }
 
       await authService.updateProfile(formData)
-      toast.success('Profil başarıyla güncellendi!')
-      await loadUser()
-      router.push('/dashboard')
+        toast.success('Profil başarıyla güncellendi!')
+        await loadUser()
+        router.push('/dashboard')
     } catch (error: any) {
       console.error('Profile update error:', error)
       const errorMessage = error.response?.data?.detail || 

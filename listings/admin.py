@@ -18,11 +18,16 @@ class ListingAdmin(admin.ModelAdmin):
         'get_model',
         'get_variant',
         'price',  
-        'city',
+        'get_location',
         'user', 
         'created_at'
         ]
-    list_filter = ['city', 'user', 'is_active']
+    list_filter = ['province', 'district', 'user', 'is_active']
+    
+    def get_location(self, obj):
+        """Tam adres bilgisini göster"""
+        return obj.full_address
+    get_location.short_description = "Konum"
 
     def get_brand(self, obj):
         return obj.car.brand.name

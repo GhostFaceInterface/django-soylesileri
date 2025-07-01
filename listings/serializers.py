@@ -2,10 +2,10 @@ from rest_framework import serializers
 from .models import Listing, ListingImage
 from users.serializers import UserSerializer
 from cars.serializers import CarSerializer
-from locations.serializers import CitySerializer
+from locations.serializers import ProvinceSerializer, DistrictSerializer, NeighborhoodSerializer
 from .utils import ImageProcessor
 from cars.models import Car, CarBrand, CarModel, CarVariant, CarTrim
-from locations.models import City
+from locations.models import Province, District, Neighborhood
 
 
 
@@ -118,12 +118,16 @@ class CreateListingSerializer(serializers.ModelSerializer):
     body_type = serializers.CharField(max_length=50, write_only=True)
     engine_power = serializers.IntegerField(write_only=True)
     
-    # Şehir
-    city_id = serializers.IntegerField(write_only=True)
+    # Yeni location yapısı
+    province_id = serializers.IntegerField(write_only=True)
+    district_id = serializers.IntegerField(write_only=True, required=False, allow_null=True)
+    neighborhood_id = serializers.IntegerField(write_only=True, required=False, allow_null=True)
     
     # Response için read-only alanlar
     car = CarSerializer(read_only=True)
-    city = CitySerializer(read_only=True)
+    province = ProvinceSerializer(read_only=True)
+    district = DistrictSerializer(read_only=True)
+    neighborhood = NeighborhoodSerializer(read_only=True)
     
     class Meta:
         model = Listing
@@ -131,7 +135,8 @@ class CreateListingSerializer(serializers.ModelSerializer):
             'id', 'title', 'description', 'price', 'is_active',
             'brand_id', 'model_id', 'variant_id', 'trim_id',
             'year', 'mileage', 'fuel_type', 'transmission', 'color', 'body_type', 'engine_power',
-            'city_id', 'car', 'city', 'created_at', 'updated_at'
+            'province_id', 'district_id', 'neighborhood_id', 
+            'car', 'province', 'district', 'neighborhood', 'created_at', 'updated_at'
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
     
@@ -155,9 +160,19 @@ class CreateListingSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Geçersiz donanım seçimi.")
         return value
     
-    def validate_city_id(self, value):
-        if not City.objects.filter(id=value).exists():
-            raise serializers.ValidationError("Geçersiz şehir seçimi.")
+    def validate_province_id(self, value):
+        if not Province.objects.filter(id=value).exists():
+            raise serializers.ValidationError("Geçersiz il seçimi.")
+        return value
+    
+    def validate_district_id(self, value):
+        if value and not District.objects.filter(id=value).exists():
+            raise serializers.ValidationError("Geçersiz ilçe seçimi.")
+        return value
+    
+    def validate_neighborhood_id(self, value):
+        if value and not Neighborhood.objects.filter(id=value).exists():
+            raise serializers.ValidationError("Geçersiz mahalle seçimi.")
         return value
     
     def validate_year(self, value):
@@ -200,6 +215,23 @@ class CreateListingSerializer(serializers.ModelSerializer):
             if trim and trim.variant_id != variant_id:
                 raise serializers.ValidationError("Seçilen donanım, seçilen varyant ile uyumlu değil.")
         
+        # Location hiyerarşi kontrolü
+        district_id = attrs.get('district_id')
+        neighborhood_id = attrs.get('neighborhood_id')
+        province_id = attrs.get('province_id')
+        
+        if district_id:
+            district = District.objects.filter(id=district_id).first()
+            if district and district.province_id != province_id:
+                raise serializers.ValidationError("Seçilen ilçe, seçilen ile ait değil.")
+        
+        if neighborhood_id:
+            if not district_id:
+                raise serializers.ValidationError("Mahalle seçmek için önce ilçe seçmelisiniz.")
+            neighborhood = Neighborhood.objects.filter(id=neighborhood_id).first()
+            if neighborhood and neighborhood.district_id != district_id:
+                raise serializers.ValidationError("Seçilen mahalle, seçilen ilçeye ait değil.")
+        
         return attrs
     
     def create(self, validated_data):
@@ -217,7 +249,18 @@ class CreateListingSerializer(serializers.ModelSerializer):
         if trim_id:
             trim = CarTrim.objects.get(id=trim_id)
         
-        city = City.objects.get(id=validated_data.pop('city_id'))
+        # Location bilgilerini al
+        province = Province.objects.get(id=validated_data.pop('province_id'))
+        district = None
+        neighborhood = None
+        
+        district_id = validated_data.pop('district_id', None)
+        if district_id:
+            district = District.objects.get(id=district_id)
+            
+        neighborhood_id = validated_data.pop('neighborhood_id', None)
+        if neighborhood_id:
+            neighborhood = Neighborhood.objects.get(id=neighborhood_id)
         
         # Car objesi oluştur
         car_data = {
@@ -238,14 +281,21 @@ class CreateListingSerializer(serializers.ModelSerializer):
         
         # Listing oluştur
         validated_data['car'] = car
-        validated_data['city'] = city
+        validated_data['province'] = province
+        validated_data['district'] = district
+        validated_data['neighborhood'] = neighborhood
         
         return super().create(validated_data)
 
 class ListingSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     car = CarSerializer(read_only=True)
-    city = CitySerializer(read_only=True)
+    
+    # Yeni location yapısı
+    province = ProvinceSerializer(read_only=True)
+    district = DistrictSerializer(read_only=True)
+    neighborhood = NeighborhoodSerializer(read_only=True)
+    full_address = serializers.ReadOnlyField()  # Model property'sinden
 
     images = ListingImageSerializer(many=True, read_only=True)
     primary_image = serializers.SerializerMethodField()
@@ -261,7 +311,10 @@ class ListingSerializer(serializers.ModelSerializer):
             'title',
             'description',
             'price',
-            'city',
+            'province',
+            'district', 
+            'neighborhood',
+            'full_address',
             'is_active',
             'is_premium',
             'created_at',
@@ -284,7 +337,6 @@ class ListingSerializer(serializers.ModelSerializer):
     def get_image_count(self, obj):
         return obj.images.count()
     
-
     def validate_price(self,value):
         if value <= 0:
             raise serializers.ValidationError("Price must be greater than 0.")
@@ -312,12 +364,16 @@ class UpdateListingSerializer(serializers.ModelSerializer):
     body_type = serializers.CharField(max_length=50, write_only=True, required=False)
     engine_power = serializers.IntegerField(write_only=True, required=False)
     
-    # Şehir
-    city_id = serializers.IntegerField(write_only=True, required=False)
+    # Yeni location yapısı
+    province_id = serializers.IntegerField(write_only=True, required=False)
+    district_id = serializers.IntegerField(write_only=True, required=False, allow_null=True)
+    neighborhood_id = serializers.IntegerField(write_only=True, required=False, allow_null=True)
     
     # Response için read-only alanlar
     car = CarSerializer(read_only=True)
-    city = CitySerializer(read_only=True)
+    province = ProvinceSerializer(read_only=True)
+    district = DistrictSerializer(read_only=True)
+    neighborhood = NeighborhoodSerializer(read_only=True)
     
     class Meta:
         model = Listing
@@ -325,7 +381,8 @@ class UpdateListingSerializer(serializers.ModelSerializer):
             'id', 'title', 'description', 'price', 'is_active',
             'brand_id', 'model_id', 'variant_id', 'trim_id',
             'year', 'mileage', 'fuel_type', 'transmission', 'color', 'body_type', 'engine_power',
-            'city_id', 'car', 'city', 'created_at', 'updated_at'
+            'province_id', 'district_id', 'neighborhood_id',
+            'car', 'province', 'district', 'neighborhood', 'created_at', 'updated_at'
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
     
@@ -349,9 +406,19 @@ class UpdateListingSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Geçersiz donanım seçimi.")
         return value
     
-    def validate_city_id(self, value):
-        if not City.objects.filter(id=value).exists():
-            raise serializers.ValidationError("Geçersiz şehir seçimi.")
+    def validate_province_id(self, value):
+        if not Province.objects.filter(id=value).exists():
+            raise serializers.ValidationError("Geçersiz il seçimi.")
+        return value
+    
+    def validate_district_id(self, value):
+        if value and not District.objects.filter(id=value).exists():
+            raise serializers.ValidationError("Geçersiz ilçe seçimi.")
+        return value
+    
+    def validate_neighborhood_id(self, value):
+        if value and not Neighborhood.objects.filter(id=value).exists():
+            raise serializers.ValidationError("Geçersiz mahalle seçimi.")
         return value
     
     def validate_year(self, value):
@@ -398,6 +465,21 @@ class UpdateListingSerializer(serializers.ModelSerializer):
                 if trim and trim.variant_id != variant_id:
                     raise serializers.ValidationError("Seçilen donanım, seçilen varyant ile uyumlu değil.")
         
+        # Location hiyerarşi kontrolü
+        district_id = attrs.get('district_id')
+        neighborhood_id = attrs.get('neighborhood_id')
+        province_id = attrs.get('province_id')
+        
+        if district_id and province_id:
+            district = District.objects.filter(id=district_id).first()
+            if district and district.province_id != province_id:
+                raise serializers.ValidationError("Seçilen ilçe, seçilen ile ait değil.")
+        
+        if neighborhood_id and district_id:
+            neighborhood = Neighborhood.objects.filter(id=neighborhood_id).first()
+            if neighborhood and neighborhood.district_id != district_id:
+                raise serializers.ValidationError("Seçilen mahalle, seçilen ilçeye ait değil.")
+        
         return attrs
     
     def update(self, instance, validated_data):
@@ -414,7 +496,11 @@ class UpdateListingSerializer(serializers.ModelSerializer):
         model_id = validated_data.pop('model_id', None)
         variant_id = validated_data.pop('variant_id', None)
         trim_id = validated_data.pop('trim_id', None)
-        city_id = validated_data.pop('city_id', None)
+        
+        # Location değişiklikleri
+        province_id = validated_data.pop('province_id', None)
+        district_id = validated_data.pop('district_id', None)
+        neighborhood_id = validated_data.pop('neighborhood_id', None)
         
         if brand_id:
             car_data['brand'] = CarBrand.objects.get(id=brand_id)
@@ -435,9 +521,17 @@ class UpdateListingSerializer(serializers.ModelSerializer):
                 setattr(instance.car, field, value)
             instance.car.save()
         
-        # Şehri güncelle
-        if city_id:
-            instance.city = City.objects.get(id=city_id)
+        # Location bilgilerini güncelle
+        if province_id:
+            instance.province = Province.objects.get(id=province_id)
+        if district_id:
+            instance.district = District.objects.get(id=district_id)
+        elif 'district_id' in validated_data:  # None gelmiş
+            instance.district = None
+        if neighborhood_id:
+            instance.neighborhood = Neighborhood.objects.get(id=neighborhood_id)
+        elif 'neighborhood_id' in validated_data:  # None gelmiş
+            instance.neighborhood = None
         
         # Listing objesini güncelle
         return super().update(instance, validated_data)

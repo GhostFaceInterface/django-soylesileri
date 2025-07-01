@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-from locations.models import City
+from locations.models import Province, District, Neighborhood
 from cars.models import Car
 
 
@@ -10,7 +10,15 @@ class Listing(models.Model):
     title = models.CharField(max_length=150)
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True, related_name='listings')
+    
+    # Yeni location yapısı - hiyerarşik adres bilgisi
+    province = models.ForeignKey(Province, on_delete=models.SET_NULL, null=True, blank=True, 
+                                verbose_name='İl', related_name='listings')
+    district = models.ForeignKey(District, on_delete=models.SET_NULL, null=True, blank=True,
+                                verbose_name='İlçe', related_name='listings') 
+    neighborhood = models.ForeignKey(Neighborhood, on_delete=models.SET_NULL, null=True, blank=True,
+                                    verbose_name='Mahalle', related_name='listings')
+    
     is_active = models.BooleanField(default=True)
     is_deleted = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -23,13 +31,46 @@ class Listing(models.Model):
         """
         return self.price >= 15000000
 
+    @property 
+    def full_address(self):
+        """
+        Tam adres bilgisini döndürür: Mahalle, İlçe, İl
+        """
+        address_parts = []
+        if self.neighborhood:
+            address_parts.append(self.neighborhood.name)
+        if self.district:
+            address_parts.append(self.district.name)
+        if self.province:
+            address_parts.append(self.province.name)
+        return ", ".join(address_parts) if address_parts else "Adres belirtilmemiş"
+
+    def clean(self):
+        """
+        Model validation - tutarlılık kontrolü
+        """
+        from django.core.exceptions import ValidationError
+        
+        # Eğer mahalle seçilmişse, o mahallenin ilçesi de seçilmeli
+        if self.neighborhood and self.district != self.neighborhood.district:
+            raise ValidationError({
+                'district': 'Seçilen mahalle bu ilçeye ait değil.'
+            })
+        
+        # Eğer ilçe seçilmişse, o ilçenin ili de seçilmeli  
+        if self.district and self.province != self.district.province:
+            raise ValidationError({
+                'province': 'Seçilen ilçe bu ile ait değil.'
+            })
+
     class Meta:
         ordering = ['-created_at']
         verbose_name = 'İlan'
         verbose_name_plural = 'İlanlar'
 
     def __str__(self):
-        return f"{self.title} - {self.car.brand.name} {self.car.model.name} ({self.price} ₺)"
+        location_info = f" - {self.full_address}" if any([self.province, self.district, self.neighborhood]) else ""
+        return f"{self.title} - {self.car.brand.name} {self.car.model.name} ({self.price} ₺){location_info}"
 
 class ListingImage(models.Model):
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name='images')

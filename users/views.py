@@ -263,7 +263,7 @@ class UserViewSet(viewsets.ModelViewSet):
             listings = Listing.objects.filter(
                 user=user, 
                 is_deleted=False
-            ).select_related('car', 'city')
+            ).select_related('car', 'province', 'district', 'neighborhood')
             
             # Mesajlar
             from private_messages.models import Message
@@ -272,7 +272,7 @@ class UserViewSet(viewsets.ModelViewSet):
                 receiver=user,
                 is_read=False
             ).count()
-            
+        
             # Son ilanlar (en yeni 5 tanesi)
             recent_listings = listings.order_by('-created_at')[:5]
             recent_listings_data = ListingSerializer(
@@ -280,7 +280,7 @@ class UserViewSet(viewsets.ModelViewSet):
                 many=True, 
                 context={'request': request}
             ).data
-            
+        
             # Son mesajlar (en yeni 5 tanesi)
             recent_messages = Message.objects.filter(
                 Q(sender=user) | Q(receiver=user)
@@ -294,7 +294,7 @@ class UserViewSet(viewsets.ModelViewSet):
                 'inactive_listings': listings.filter(is_active=False).count(),
                 'unread_messages': unread_messages,
             }
-            
+        
             return Response({
                 'user': UserSerializer(user).data,
                 'stats': stats,

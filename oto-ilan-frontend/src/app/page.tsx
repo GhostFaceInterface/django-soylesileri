@@ -61,7 +61,7 @@ export default function HomePage() {
 
   const recentListings = listingsData?.results?.slice(0, 8) || []
   const popularBrands = brands?.slice(0, 8) || []
-  
+
   // Premium listings - Backend'den is_premium kullan
   const premiumListings = recentListings.filter(listing => listing.is_premium)
 
@@ -130,7 +130,7 @@ export default function HomePage() {
         {/* Static grid pattern */}
         <div className="absolute inset-0 bg-[linear-gradient(rgba(79,70,229,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(79,70,229,0.02)_1px,transparent_1px)] bg-[size:20px_20px]"></div>
       </div>
-      
+
       <Header />
       
       {/* Hero Section with Advanced Search */}
@@ -140,7 +140,7 @@ export default function HomePage() {
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 bg-gradient-to-r from-blue-200 to-cyan-200 bg-clip-text text-transparent">
               Otomobil Ara
-            </h1>
+              </h1>
             <p className="text-xl text-blue-100/80 max-w-2xl mx-auto">
               Türkiye'nin en kapsamlı otomobil pazarında aradığınız aracı kolayca bulun
             </p>
@@ -180,13 +180,13 @@ export default function HomePage() {
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-3xl font-bold text-white">Son Eklenen İlanlar</h2>
             <Link 
-              href="/listings" 
+              href="/listings"
               className="text-cyan-300 hover:text-white transition-colors font-medium"
             >
               Tümünü Gör →
             </Link>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {recentListings.map((listing) => (
               <Link key={listing.id} href={`/listings/${listing.id}`} className="group">
@@ -227,7 +227,7 @@ export default function HomePage() {
                       </div>
                     </div>
                   </div>
-                </div>
+              </div>
               </Link>
             ))}
           </div>
@@ -256,7 +256,7 @@ export default function HomePage() {
                       <span className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold px-2 py-1 rounded-lg shadow-lg">
                         PREMIUM
                       </span>
-                    </div>
+              </div>
                     {listing.primary_image ? (
                       <img
                         src={listing.primary_image.thumbnail_url}
@@ -269,8 +269,8 @@ export default function HomePage() {
                         <svg className="h-12 w-12 text-amber-300/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
                         </svg>
-                      </div>
-                    )}
+            </div>
+          )}
                   </div>
                   
                   <div className="p-4 h-32 flex flex-col justify-between">
@@ -432,20 +432,20 @@ function PremiumListingCard({ listing, isPremium = false }: { listing: Listing; 
             <h3 className={`font-bold text-base leading-tight mb-2 truncate group-hover:transition-colors duration-300 ${
               isPremium ? 'text-white group-hover:text-yellow-300' : 'text-white group-hover:text-blue-300'
             }`}>
-              {listing.title}
-            </h3>
-            
+            {listing.title}
+          </h3>
+          
             {/* Car Info - Compact badges */}
             <div className="flex items-center gap-1 mb-2 flex-wrap">
               <span className="bg-white/20 text-white/90 px-2 py-0.5 rounded text-xs font-medium truncate max-w-[60px]">
-                {listing.car.brand.name}
-              </span>
+              {listing.car.brand.name}
+            </span>
               <span className="bg-white/20 text-white/90 px-2 py-0.5 rounded text-xs font-medium truncate max-w-[60px]">
-                {listing.car.model.name}
-              </span>
+              {listing.car.model.name}
+            </span>
               <span className="bg-white/20 text-white/90 px-2 py-0.5 rounded text-xs font-medium">
-                {listing.car.year}
-              </span>
+              {listing.car.year}
+            </span>
             </div>
           </div>
           

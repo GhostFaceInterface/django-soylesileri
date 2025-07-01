@@ -95,7 +95,7 @@ export default function NewListingPage() {
       return
     }
     if (isAuthenticated) {
-      loadInitialData()
+    loadInitialData()
     }
   }, [isAuthenticated, authLoading, router])
 
@@ -296,9 +296,9 @@ export default function NewListingPage() {
       // Set thumbnail ONLY if user manually selected one
       // If no selection, backend automatically sets first image as primary
       if (selectedThumbnail) {
-        const thumbnailImage = images.find(img => img.id === selectedThumbnail)
-        if (thumbnailImage?.uploadedImageId) {
-          await authService.setPrimaryImage(thumbnailImage.uploadedImageId)
+      const thumbnailImage = images.find(img => img.id === selectedThumbnail)
+      if (thumbnailImage?.uploadedImageId) {
+        await authService.setPrimaryImage(thumbnailImage.uploadedImageId)
         }
       }
       

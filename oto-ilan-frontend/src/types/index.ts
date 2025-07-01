@@ -107,6 +107,37 @@ export interface City {
   name: string
 }
 
+// New hierarchical location types
+export interface Province {
+  id: number
+  name: string
+  api_id: number
+}
+
+export interface District {
+  id: number
+  name: string
+  api_id: number
+  province: number
+  province_name: string
+}
+
+export interface Neighborhood {
+  id: number
+  name: string
+  api_id: number
+  district: number
+  district_name: string
+  province_name: string
+}
+
+// Location selection state for forms
+export interface LocationSelection {
+  province_id?: number
+  district_id?: number
+  neighborhood_id?: number
+}
+
 // Listing Image types
 export interface ListingImage {
   id: number
@@ -130,7 +161,10 @@ export interface Listing {
   title: string
   description: string
   price: string | number
-  city?: City
+  city?: City  // Backward compatibility
+  province?: Province
+  district?: District
+  neighborhood?: Neighborhood
   is_active: boolean
   is_premium: boolean
   created_at: string
@@ -145,7 +179,10 @@ export interface ListingCreate {
   title: string
   description: string
   price: number
-  city_id?: number
+  city_id?: number  // Backward compatibility
+  province_id?: number
+  district_id?: number
+  neighborhood_id?: number
 }
 
 export interface ListingFilters {
@@ -160,7 +197,10 @@ export interface ListingFilters {
   color?: string
   min_engine_power?: number
   max_engine_power?: number
-  city?: number[]
+  city?: number[]  // Backward compatibility
+  province?: number[]
+  district?: number[]
+  neighborhood?: number[]
   brand?: number[]
   title_search?: string
   description_search?: string

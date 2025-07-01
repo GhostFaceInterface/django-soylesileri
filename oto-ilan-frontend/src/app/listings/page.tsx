@@ -6,6 +6,7 @@ import { Header } from '@/components/layout/header';
 import { listingsService } from '@/lib/services/listings';
 import { carsService } from '@/lib/services/cars';
 import { formatPrice, getFuelTypeLabel, getTransmissionLabel } from '@/lib/utils';
+import { getShortLocationDisplay } from '@/lib/utils/locationDisplay';
 import { CarBrand, CarModel, Listing } from '@/types';
 import Link from 'next/link';
 import {
@@ -486,7 +487,7 @@ function ListingCard({ listing }: { listing: Listing }) {
                 </div>
                 <div className="flex items-center gap-2">
                   <MapPinIcon className="h-4 w-4 flex-shrink-0" />
-                  <span>{listing.city?.name || 'Belirtilmemiş'}</span>
+                  <span>{getShortLocationDisplay(listing)}</span>
                 </div>
               </div>
               

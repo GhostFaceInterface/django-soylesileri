@@ -55,7 +55,7 @@ def log_listing_update(sender, instance, created, **kwargs):
             return
 
         fields_to_check = [
-            "title", "description", "price", "city", 
+            "title", "description", "price", "province", "district", "neighborhood",
             "is_active", "is_deleted"
         ]
         changes = []

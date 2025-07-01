@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuthStore } from '@/lib/stores/auth';
+import { getLocationDisplay } from '@/lib/utils/locationDisplay';
 import {
   PhoneIcon,
   ChatBubbleLeftRightIcon,
@@ -59,9 +60,22 @@ interface ListingDetail {
     body_type: string;
     engine_power: number;
   };
-  city: {
+  city?: {
     name: string;
   };
+  province?: {
+    id: number;
+    name: string;
+  };
+  district?: {
+    id: number;
+    name: string;
+  };
+  neighborhood?: {
+    id: number;
+    name: string;
+  };
+  full_address?: string;
   images: Array<{
     id: number;
     thumbnail_url: string;
@@ -455,7 +469,7 @@ export default function ListingDetailPage() {
                 <h1 className="text-xl font-bold text-slate-800 mb-2">{listing.title}</h1>
                 <div className="flex items-center justify-center text-slate-600">
                   <MapPinIcon className="h-4 w-4 mr-1" />
-                  <span>{listing.city.name}</span>
+                  <span>{getLocationDisplay(listing)}</span>
                 </div>
               </div>
 

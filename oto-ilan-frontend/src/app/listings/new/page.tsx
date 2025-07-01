@@ -21,7 +21,8 @@ import {
 } from '@heroicons/react/24/outline'
 import toast from 'react-hot-toast'
 import Link from 'next/link'
-import type { CarBrand, CarModel, CarVariant, CarTrim, City } from '@/types'
+import type { CarBrand, CarModel, CarVariant, CarTrim, City, LocationSelection } from '@/types'
+import { LocationSelector } from '@/components/LocationSelector'
 
 interface UploadedImage {
   id: string
@@ -57,7 +58,12 @@ const listingSchema = z.object({
   title: z.string().min(5, 'Başlık en az 5 karakter olmalıdır').max(150, 'Başlık en fazla 150 karakter olabilir'),
   description: z.string().min(20, 'Açıklama en az 20 karakter olmalıdır'),
   price: z.number().min(1, 'Fiyat 0\'dan büyük olmalıdır'),
-  city_id: z.number().min(1, 'Şehir seçiniz'),
+  
+  // Location - backward compatibility için city_id opsiyonel
+  city_id: z.number().optional(),
+  province_id: z.number().min(1, 'İl seçiniz'),
+  district_id: z.number().optional(),
+  neighborhood_id: z.number().optional(),
 })
 
 type ListingFormData = z.infer<typeof listingSchema>
@@ -78,6 +84,9 @@ export default function NewListingPage() {
   const [variants, setVariants] = useState<CarVariant[]>([])
   const [trims, setTrims] = useState<CarTrim[]>([])
   const [cities, setCities] = useState<City[]>([])
+  
+  // Location selection state
+  const [locationSelection, setLocationSelection] = useState<LocationSelection>({})
   
   // Form
   const { register, handleSubmit, watch, setValue, control, formState: { errors, isSubmitting } } = useForm<ListingFormData>({
@@ -152,6 +161,13 @@ export default function NewListingPage() {
       setTrims([])
     }
   }, [selectedVariantId, setValue])
+
+  // Sync location selection with form values
+  useEffect(() => {
+    setValue('province_id', locationSelection.province_id || undefined)
+    setValue('district_id', locationSelection.district_id || undefined) 
+    setValue('neighborhood_id', locationSelection.neighborhood_id || undefined)
+  }, [locationSelection, setValue])
 
   const fetchModelsByBrand = async (brandId: number) => {
     try {
@@ -684,24 +700,16 @@ export default function NewListingPage() {
                     )}
                   </div>
 
-                  {/* Şehir */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Şehir *
-                    </label>
-                    <select
-                      {...register('city_id', { valueAsNumber: true })}
-                      className="input-glass"
-                    >
-                      <option value="">Şehir Seçiniz</option>
-                      {Array.isArray(cities) && cities.map((city) => (
-                        <option key={city.id} value={city.id}>
-                          {city.name}
-                        </option>
-                      ))}
-                    </select>
-                    {errors.city_id && (
-                      <p className="text-red-500 text-sm mt-1">{errors.city_id.message}</p>
+                  {/* Location Selection */}
+                  <div className="md:col-span-2">
+                    <LocationSelector
+                      value={locationSelection}
+                      onChange={setLocationSelection}
+                      required={true}
+                      showNeighborhood={false}  // Sadece il/ilçe seçimi (mahalle opsiyonel)
+                    />
+                    {errors.province_id && (
+                      <p className="text-red-500 text-sm mt-1">{errors.province_id.message}</p>
                     )}
                   </div>
                 </div>

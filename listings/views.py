@@ -83,7 +83,8 @@ class ListingViewSet(viewsets.ModelViewSet):
                 queryset = queryset.filter(combined_condition)
         
         return queryset.select_related(
-            'user', 'car', 'car__brand', 'car__model', 'car__variant', 'city'
+            'user', 'car', 'car__brand', 'car__model', 'car__variant', 
+            'province', 'district', 'neighborhood'
         ).prefetch_related('images').distinct()
 
     def perform_create(self, serializer):

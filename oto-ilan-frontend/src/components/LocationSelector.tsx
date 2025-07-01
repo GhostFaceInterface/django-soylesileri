@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { authService } from '@/lib/services/auth'
+import { locationDataService } from '@/lib/services/locationData'
 import type { Province, District, Neighborhood, LocationSelection } from '@/types'
 import { ChevronDownIcon, MapPinIcon } from '@heroicons/react/24/outline'
 import toast from 'react-hot-toast'
@@ -83,7 +84,8 @@ export const LocationSelector: React.FC<LocationSelectorProps> = ({
   const loadProvinces = async () => {
     try {
       setIsLoadingProvinces(true)
-      const response = await authService.getProvinces()
+      // 🚀 Using static JSON instead of API call for better performance
+      const response = await locationDataService.getProvinces()
       const provincesArray = Array.isArray(response) ? response : response?.results || []
       setProvinces(provincesArray)
     } catch (error) {
@@ -97,7 +99,8 @@ export const LocationSelector: React.FC<LocationSelectorProps> = ({
   const loadDistricts = async (provinceId: number) => {
     try {
       setIsLoadingDistricts(true)
-      const response = await authService.getDistrictsByProvince(provinceId)
+      // 🚀 Using static JSON instead of API call for better performance
+      const response = await locationDataService.getDistrictsByProvince(provinceId)
       const districtsArray = Array.isArray(response) ? response : response?.results || []
       setDistricts(districtsArray)
     } catch (error) {
@@ -111,7 +114,8 @@ export const LocationSelector: React.FC<LocationSelectorProps> = ({
   const loadNeighborhoods = async (districtId: number) => {
     try {
       setIsLoadingNeighborhoods(true)
-      const response = await authService.getNeighborhoodsByDistrict(districtId)
+      // 🚀 Using static JSON instead of API call for better performance
+      const response = await locationDataService.getNeighborhoodsByDistrict(districtId)
       const neighborhoodsArray = Array.isArray(response) ? response : response?.results || []
       setNeighborhoods(neighborhoodsArray)
     } catch (error) {

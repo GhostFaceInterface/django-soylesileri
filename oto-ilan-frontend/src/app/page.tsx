@@ -20,6 +20,7 @@ import { carsService } from '@/lib/services/cars'
 import { formatPrice, formatRelativeTime } from '@/lib/utils'
 import { Listing, CarBrand, CarModel, CarVariant, CarTrim, Province } from '@/types'
 import { authService } from '@/lib/services/auth'
+import { locationDataService } from '@/lib/services/locationData'
 
 interface SearchRow {
   id: string
@@ -517,7 +518,8 @@ function AdvancedSearchForm() {
 
   const loadProvinces = async () => {
     try {
-      const response = await authService.getProvinces()
+      // 🚀 Using static JSON instead of API call for better performance
+      const response = await locationDataService.getProvinces()
       setProvinces(response || [])
     } catch (error) {
       console.error('Error loading provinces:', error)

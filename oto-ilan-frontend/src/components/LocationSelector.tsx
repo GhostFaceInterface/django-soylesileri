@@ -1,7 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
-import { authService } from '@/lib/services/auth'
+import React, { useState, useEffect, useCallback } from 'react'
 import { locationDataService } from '@/lib/services/locationData'
 import type { Province, District, Neighborhood, LocationSelection } from '@/types'
 import { ChevronDownIcon, MapPinIcon } from '@heroicons/react/24/outline'
@@ -21,7 +20,7 @@ interface LocationSelectorProps {
 }
 
 export const LocationSelector: React.FC<LocationSelectorProps> = ({
-  value,
+  value = {},
   onChange,
   required = false,
   disabled = false,
@@ -51,14 +50,6 @@ export const LocationSelector: React.FC<LocationSelectorProps> = ({
   useEffect(() => {
     if (value.province_id) {
       loadDistricts(value.province_id)
-      // Clear district and neighborhood if province changed
-      if (value.district_id || value.neighborhood_id) {
-        onChange({
-          province_id: value.province_id,
-          district_id: undefined,
-          neighborhood_id: undefined
-        })
-      }
     } else {
       setDistricts([])
       setNeighborhoods([])
@@ -69,13 +60,6 @@ export const LocationSelector: React.FC<LocationSelectorProps> = ({
   useEffect(() => {
     if (value.district_id && showNeighborhood) {
       loadNeighborhoods(value.district_id)
-      // Clear neighborhood if district changed
-      if (value.neighborhood_id) {
-        onChange({
-          ...value,
-          neighborhood_id: undefined
-        })
-      }
     } else {
       setNeighborhoods([])
     }
@@ -85,9 +69,8 @@ export const LocationSelector: React.FC<LocationSelectorProps> = ({
     try {
       setIsLoadingProvinces(true)
       // 🚀 Using static JSON instead of API call for better performance
-      const response = await locationDataService.getProvinces()
-      const provincesArray = Array.isArray(response) ? response : response?.results || []
-      setProvinces(provincesArray)
+      const provinces = await locationDataService.getProvinces()
+      setProvinces(provinces)
     } catch (error) {
       console.error('Error loading provinces:', error)
       toast.error('İller yüklenirken hata oluştu')
@@ -100,9 +83,8 @@ export const LocationSelector: React.FC<LocationSelectorProps> = ({
     try {
       setIsLoadingDistricts(true)
       // 🚀 Using static JSON instead of API call for better performance
-      const response = await locationDataService.getDistrictsByProvince(provinceId)
-      const districtsArray = Array.isArray(response) ? response : response?.results || []
-      setDistricts(districtsArray)
+      const districts = await locationDataService.getDistrictsByProvince(provinceId)
+      setDistricts(districts)
     } catch (error) {
       console.error('Error loading districts:', error)
       toast.error('İlçeler yüklenirken hata oluştu')
@@ -115,9 +97,8 @@ export const LocationSelector: React.FC<LocationSelectorProps> = ({
     try {
       setIsLoadingNeighborhoods(true)
       // 🚀 Using static JSON instead of API call for better performance
-      const response = await locationDataService.getNeighborhoodsByDistrict(districtId)
-      const neighborhoodsArray = Array.isArray(response) ? response : response?.results || []
-      setNeighborhoods(neighborhoodsArray)
+      const neighborhoods = await locationDataService.getNeighborhoodsByDistrict(districtId)
+      setNeighborhoods(neighborhoods)
     } catch (error) {
       console.error('Error loading neighborhoods:', error)
       toast.error('Mahalleler yüklenirken hata oluştu')
@@ -126,51 +107,51 @@ export const LocationSelector: React.FC<LocationSelectorProps> = ({
     }
   }
 
-  const handleProvinceChange = (provinceId: string) => {
+  const handleProvinceChange = useCallback((provinceId: string) => {
     const newProvinceId = provinceId ? parseInt(provinceId) : undefined
     onChange({
       province_id: newProvinceId,
       district_id: undefined,
       neighborhood_id: undefined
     })
-  }
+  }, [onChange])
 
-  const handleDistrictChange = (districtId: string) => {
+  const handleDistrictChange = useCallback((districtId: string) => {
     const newDistrictId = districtId ? parseInt(districtId) : undefined
     onChange({
       ...value,
       district_id: newDistrictId,
       neighborhood_id: undefined
     })
-  }
+  }, [onChange, value])
 
-  const handleNeighborhoodChange = (neighborhoodId: string) => {
+  const handleNeighborhoodChange = useCallback((neighborhoodId: string) => {
     const newNeighborhoodId = neighborhoodId ? parseInt(neighborhoodId) : undefined
     onChange({
       ...value,
       neighborhood_id: newNeighborhoodId
     })
-  }
+  }, [onChange, value])
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center space-x-2 text-sm font-medium text-gray-700 mb-2">
-        <MapPinIcon className="w-4 h-4 text-blue-600" />
-        <span>Konum Seçimi {required && <span className="text-red-500">*</span>}</span>
+      <div className="flex items-center space-x-2 text-sm font-medium text-gray-300 mb-2">
+        <MapPinIcon className="w-4 h-4 text-blue-400" />
+        <span>Konum Seçimi {required && <span className="text-red-400">*</span>}</span>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Province Selection */}
         <div>
-          <label className="block text-sm font-medium text-gray-600 mb-1">
-            İl {required && <span className="text-red-500">*</span>}
+          <label className="block text-sm font-medium text-gray-300 mb-1">
+            İl {required && <span className="text-red-400">*</span>}
           </label>
           <div className="relative">
             <select
               value={value.province_id || ''}
               onChange={(e) => handleProvinceChange(e.target.value)}
               disabled={disabled || isLoadingProvinces}
-              className="w-full bg-white/70 backdrop-blur-sm border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-gray-800/60 border border-gray-600/40 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <option value="">{placeholder.province}</option>
               {provinces.map((province) => (
@@ -190,15 +171,15 @@ export const LocationSelector: React.FC<LocationSelectorProps> = ({
 
         {/* District Selection */}
         <div>
-          <label className="block text-sm font-medium text-gray-600 mb-1">
-            İlçe {required && <span className="text-red-500">*</span>}
+          <label className="block text-sm font-medium text-gray-300 mb-1">
+            İlçe {required && <span className="text-red-400">*</span>}
           </label>
           <div className="relative">
             <select
               value={value.district_id || ''}
               onChange={(e) => handleDistrictChange(e.target.value)}
               disabled={disabled || !value.province_id || isLoadingDistricts}
-              className="w-full bg-white/70 backdrop-blur-sm border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-gray-800/60 border border-gray-600/40 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <option value="">{placeholder.district}</option>
               {districts.map((district) => (
@@ -219,7 +200,7 @@ export const LocationSelector: React.FC<LocationSelectorProps> = ({
         {/* Neighborhood Selection */}
         {showNeighborhood && (
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">
+            <label className="block text-sm font-medium text-gray-300 mb-1">
               Mahalle
             </label>
             <div className="relative">
@@ -227,7 +208,7 @@ export const LocationSelector: React.FC<LocationSelectorProps> = ({
                 value={value.neighborhood_id || ''}
                 onChange={(e) => handleNeighborhoodChange(e.target.value)}
                 disabled={disabled || !value.district_id || isLoadingNeighborhoods}
-                className="w-full bg-white/70 backdrop-blur-sm border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-gray-800/60 border border-gray-600/40 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <option value="">{placeholder.neighborhood}</option>
                 {neighborhoods.map((neighborhood) => (
@@ -249,21 +230,21 @@ export const LocationSelector: React.FC<LocationSelectorProps> = ({
 
       {/* Selected Location Display */}
       {(value.province_id || value.district_id || value.neighborhood_id) && (
-        <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-          <p className="text-sm text-blue-800">
+        <div className="mt-3 p-3 bg-blue-900/20 border border-blue-700/40 rounded-lg">
+          <p className="text-sm text-blue-200">
             <span className="font-medium">Seçilen Konum:</span>{' '}
             {neighborhoods.find(n => n.id === value.neighborhood_id)?.name ||
              districts.find(d => d.id === value.district_id)?.name ||
              provinces.find(p => p.id === value.province_id)?.name ||
              'Konum seçiliyor...'}
             {value.neighborhood_id && neighborhoods.find(n => n.id === value.neighborhood_id) && (
-              <span className="text-blue-600">
+              <span className="text-blue-300">
                 {' '} → {neighborhoods.find(n => n.id === value.neighborhood_id)?.district_name}
                 {' '} → {neighborhoods.find(n => n.id === value.neighborhood_id)?.province_name}
               </span>
             )}
             {!value.neighborhood_id && value.district_id && districts.find(d => d.id === value.district_id) && (
-              <span className="text-blue-600">
+              <span className="text-blue-300">
                 {' '} → {districts.find(d => d.id === value.district_id)?.province_name}
               </span>
             )}

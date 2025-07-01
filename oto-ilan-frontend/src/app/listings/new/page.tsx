@@ -21,7 +21,7 @@ import {
 } from '@heroicons/react/24/outline'
 import toast from 'react-hot-toast'
 import Link from 'next/link'
-import type { CarBrand, CarModel, CarVariant, CarTrim, City, LocationSelection } from '@/types'
+import type { CarBrand, CarModel, CarVariant, CarTrim, Province, District, Neighborhood, LocationSelection } from '@/types'
 import { LocationSelector } from '@/components/LocationSelector'
 
 interface UploadedImage {
@@ -59,11 +59,10 @@ const listingSchema = z.object({
   description: z.string().min(20, 'Açıklama en az 20 karakter olmalıdır'),
   price: z.number().min(1, 'Fiyat 0\'dan büyük olmalıdır'),
   
-  // Location - backward compatibility için city_id opsiyonel
-  city_id: z.number().optional(),
+  // Location
   province_id: z.number().min(1, 'İl seçiniz'),
-  district_id: z.number().optional(),
-  neighborhood_id: z.number().optional(),
+  district_id: z.number().min(1, 'İlçe seçiniz'),
+  neighborhood_id: z.number().min(1, 'Mahalle seçiniz'),
 })
 
 type ListingFormData = z.infer<typeof listingSchema>
@@ -83,7 +82,6 @@ export default function NewListingPage() {
   const [models, setModels] = useState<CarModel[]>([])
   const [variants, setVariants] = useState<CarVariant[]>([])
   const [trims, setTrims] = useState<CarTrim[]>([])
-  const [cities, setCities] = useState<City[]>([])
   
   // Location selection state
   const [locationSelection, setLocationSelection] = useState<LocationSelection>({})
@@ -204,17 +202,12 @@ export default function NewListingPage() {
 
   const loadInitialData = async () => {
     try {
-      const [brandsData, citiesData] = await Promise.all([
-        authService.getBrands(),
-        authService.getCities(),
-      ])
+      const brandsData = await authService.getBrands()
       
       // Ensure all data are arrays
       const brandsArray = Array.isArray(brandsData) ? brandsData : brandsData?.results || []
-      const citiesArray = Array.isArray(citiesData) ? citiesData : citiesData?.results || []
       
       setBrands(brandsArray)
-      setCities(citiesArray)
     } catch (error) {
       console.error('Error loading data:', error)
       toast.error('Veriler yüklenirken hata oluştu')
@@ -706,7 +699,7 @@ export default function NewListingPage() {
                       value={locationSelection}
                       onChange={setLocationSelection}
                       required={true}
-                      showNeighborhood={false}  // Sadece il/ilçe seçimi (mahalle opsiyonel)
+                      showNeighborhood={true}  // İl/ilçe/mahalle seçimi zorunlu
                     />
                     {errors.province_id && (
                       <p className="text-red-500 text-sm mt-1">{errors.province_id.message}</p>

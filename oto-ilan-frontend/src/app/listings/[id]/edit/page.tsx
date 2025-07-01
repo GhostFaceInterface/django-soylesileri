@@ -10,7 +10,8 @@ import { Header } from '@/components/layout/header'
 import { listingsService } from '@/lib/services/listings'
 import { carsService } from '@/lib/services/cars'
 import { locationsService } from '@/lib/services/locations'
-import { CarBrand, CarModel, CarVariant, CarTrim, City, Listing } from '@/types'
+import { CarBrand, CarModel, CarVariant, CarTrim, Listing, Province, District, Neighborhood } from '@/types'
+import { LocationSelector } from '@/components/LocationSelector'
 import toast from 'react-hot-toast'
 import {
   ArrowLeftIcon,
@@ -41,7 +42,9 @@ const editListingSchema = z.object({
   engine_power: z.number().min(50, 'Motor gücü en az 50 HP olmalı').max(2000, 'Motor gücü en fazla 2000 HP olabilir'),
   
   // Lokasyon
-  city_id: z.number().min(1, 'Şehir seçimi zorunludur'),
+  province_id: z.number().min(1, 'İl seçimi zorunludur'),
+  district_id: z.number().min(1, 'İlçe seçimi zorunludur'),
+  neighborhood_id: z.number().min(1, 'Mahalle seçimi zorunludur'),
   
   is_active: z.boolean()
 })
@@ -61,7 +64,13 @@ export default function EditListingPage() {
   const [models, setModels] = useState<CarModel[]>([])
   const [variants, setVariants] = useState<CarVariant[]>([])
   const [trims, setTrims] = useState<CarTrim[]>([])
-  const [cities, setCities] = useState<City[]>([])
+  
+  // Location states for form values
+  const [locationSelection, setLocationSelection] = useState<{
+    province_id?: number
+    district_id?: number
+    neighborhood_id?: number
+  }>({})
   
   const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<EditListingForm>({
     resolver: zodResolver(editListingSchema),
@@ -111,8 +120,17 @@ export default function EditListingPage() {
       setValue('color', data.car.color)
       setValue('body_type', data.car.body_type)
       setValue('engine_power', data.car.engine_power)
-      setValue('city_id', data.city.id)
+      setValue('province_id', data.province?.id || 0)
+      setValue('district_id', data.district?.id || 0)
+      setValue('neighborhood_id', data.neighborhood?.id || 0)
       setValue('is_active', data.is_active)
+      
+      // Set location state for LocationSelector
+      setLocationSelection({
+        province_id: data.province?.id,
+        district_id: data.district?.id,
+        neighborhood_id: data.neighborhood?.id
+      })
       
     } catch (error: any) {
       if (error.response?.status === 404) {
@@ -131,12 +149,8 @@ export default function EditListingPage() {
 
   const loadInitialData = async () => {
     try {
-      const [brandsData, citiesData] = await Promise.all([
-        carsService.getBrands(),
-        locationsService.getCities()
-      ])
+      const brandsData = await carsService.getBrands()
       setBrands(brandsData)
-      setCities(citiesData)
     } catch (error) {
       toast.error('Veriler yüklenirken hata oluştu!')
     }
@@ -386,18 +400,22 @@ export default function EditListingPage() {
                 </div>
 
                 <div>
-                  <label className="block text-white font-medium mb-2">Şehir</label>
-                  <select
-                    {...register('city_id', { valueAsNumber: true })}
-                    className="w-full px-4 py-3 bg-gray-800/60 border border-gray-600/40 rounded-xl text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                  >
-                    <option value="">Şehir seçin</option>
-                    {cities && cities.map ? cities.map(city => (
-                      <option key={city.id} value={city.id}>{city.name}</option>
-                    )) : null}
-                  </select>
-                  {errors.city_id && (
-                    <p className="text-red-400 text-sm mt-1">{errors.city_id.message}</p>
+                  <label className="block text-white font-medium mb-2">Lokasyon</label>
+                  <LocationSelector
+                    value={locationSelection}
+                    onChange={(location) => {
+                      setLocationSelection(location)
+                      setValue('province_id', location.province_id || 0)
+                      setValue('district_id', location.district_id || 0)  
+                      setValue('neighborhood_id', location.neighborhood_id || 0)
+                    }}
+                    required={true}
+                    showNeighborhood={true}
+                  />
+                  {(errors.province_id || errors.district_id || errors.neighborhood_id) && (
+                    <p className="text-red-400 text-sm mt-1">
+                      {errors.province_id?.message || errors.district_id?.message || errors.neighborhood_id?.message}
+                    </p>
                   )}
                 </div>
 

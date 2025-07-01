@@ -336,7 +336,7 @@ class ListingSerializer(serializers.ModelSerializer):
         
     def get_image_count(self, obj):
         return obj.images.count()
-    
+
     def validate_price(self,value):
         if value <= 0:
             raise serializers.ValidationError("Price must be greater than 0.")

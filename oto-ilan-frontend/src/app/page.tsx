@@ -18,7 +18,8 @@ import { Header } from '@/components/layout/header'
 import { listingsService } from '@/lib/services/listings'
 import { carsService } from '@/lib/services/cars'
 import { formatPrice, formatRelativeTime } from '@/lib/utils'
-import { Listing, CarBrand, CarModel, CarVariant, CarTrim } from '@/types'
+import { Listing, CarBrand, CarModel, CarVariant, CarTrim, Province } from '@/types'
+import { authService } from '@/lib/services/auth'
 
 interface SearchRow {
   id: string
@@ -37,6 +38,7 @@ interface AdvancedSearchData {
   minMileage: string
   maxMileage: string
   fuelType: string
+  province: string  // Il seçimi eklendi
 }
 
 export default function HomePage() {
@@ -489,16 +491,19 @@ function AdvancedSearchForm() {
     minMileage: '',
     maxMileage: '',
     fuelType: '',
+    province: '',  // Il seçimi eklendi
   })
   const [isExpanded, setIsExpanded] = useState(false)
   const [brands, setBrands] = useState<CarBrand[]>([])
+  const [provinces, setProvinces] = useState<Province[]>([])  // Il listesi eklendi
   const [modelsPerRow, setModelsPerRow] = useState<{[key: string]: CarModel[]}>({})
   const [variantsPerRow, setVariantsPerRow] = useState<{[key: string]: CarVariant[]}>({})
   const [trimsPerRow, setTrimsPerRow] = useState<{[key: string]: CarTrim[]}>({})
 
   useEffect(() => {
-    // Load brands on component mount
+    // Load brands and provinces on component mount
     loadBrands()
+    loadProvinces()
   }, [])
 
   const loadBrands = async () => {
@@ -507,6 +512,15 @@ function AdvancedSearchForm() {
       setBrands(response || [])
     } catch (error) {
       console.error('Error loading brands:', error)
+    }
+  }
+
+  const loadProvinces = async () => {
+    try {
+      const response = await authService.getProvinces()
+      setProvinces(response || [])
+    } catch (error) {
+      console.error('Error loading provinces:', error)
     }
   }
 
@@ -613,6 +627,9 @@ function AdvancedSearchForm() {
     }
     if (searchData.fuelType) {
       params.append('fuel_type', searchData.fuelType)
+    }
+    if (searchData.province) {
+      params.append('province', searchData.province)
     }
 
     // Navigate to listings with search params
@@ -836,7 +853,7 @@ function AdvancedSearchForm() {
           </div>
         </div>
 
-        {/* Fuel Type & Search Button */}
+        {/* Fuel Type, Province & Search Button */}
         <div className="flex flex-wrap items-center gap-4">
           <div className="flex-1 min-w-48">
             <select
@@ -849,6 +866,22 @@ function AdvancedSearchForm() {
               <option value="diesel" className="bg-gray-900 text-white">Dizel</option>
               <option value="electric" className="bg-gray-900 text-white">Elektrik</option>
               <option value="hybrid" className="bg-gray-900 text-white">Hibrit</option>
+            </select>
+          </div>
+
+          {/* Province Selection */}
+          <div className="flex-1 min-w-48">
+            <select
+              value={searchData.province}
+              onChange={(e) => setSearchData(prev => ({ ...prev, province: e.target.value }))}
+              className="w-full bg-gray-800/60 text-white placeholder-gray-300/60 border border-gray-600/40 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            >
+              <option value="" className="bg-gray-900 text-white">İl Seçiniz</option>
+              {provinces.map((province) => (
+                <option key={province.id} value={province.id} className="bg-gray-900 text-white">
+                  {province.name}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -872,6 +905,7 @@ function AdvancedSearchForm() {
                   minMileage: '',
                   maxMileage: '',
                   fuelType: '',
+                  province: '',  // Il seçimi eklendi
                 })
                 setModelsPerRow({})
                 setVariantsPerRow({})

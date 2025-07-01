@@ -281,7 +281,7 @@ class UserViewSet(viewsets.ModelViewSet):
                 context={'request': request}
             ).data
         
-            # Son mesajlar (en yeni 5 tanesi)
+                        # Son mesajlar (en yeni 5 tanesi)
             recent_messages = Message.objects.filter(
                 Q(sender=user) | Q(receiver=user)
             ).order_by('-timestamp')[:5]

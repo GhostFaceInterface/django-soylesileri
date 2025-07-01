@@ -7,6 +7,7 @@ from .models import Listing, ListingImage
 from .serializers import (
     ListingSerializer,
     CreateListingSerializer,
+    UpdateListingSerializer,
     ListingImageSerializer,
     BulkImageUploadSerializer
     )
@@ -40,6 +41,8 @@ class ListingViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == 'create':
             return CreateListingSerializer
+        elif self.action in ['update', 'partial_update']:
+            return UpdateListingSerializer
         return ListingSerializer
     
     def get_queryset(self):
@@ -99,6 +102,18 @@ class ListingViewSet(viewsets.ModelViewSet):
         
         headers = self.get_success_headers(serializer.data)
         return Response(response_serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        
+        # Response için ListingSerializer kullan
+        response_serializer = ListingSerializer(serializer.instance, context={'request': request})
+        
+        return Response(response_serializer.data)
 
     def perform_destroy(self, instance):
         """

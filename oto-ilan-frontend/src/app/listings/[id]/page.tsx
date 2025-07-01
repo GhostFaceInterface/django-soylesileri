@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import { useAuthStore } from '@/lib/stores/auth';
 import {
   PhoneIcon,
   ChatBubbleLeftRightIcon,
@@ -19,7 +20,8 @@ import {
   ChevronRightIcon,
   XMarkIcon,
   EyeIcon,
-  ClockIcon
+  ClockIcon,
+  PencilIcon
 } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
 
@@ -73,6 +75,7 @@ interface ListingDetail {
 
 export default function ListingDetailPage() {
   const { id } = useParams();
+  const { user } = useAuthStore();
   const [listing, setListing] = useState<ListingDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
@@ -497,16 +500,29 @@ export default function ListingDetailPage() {
             <div className="bg-white/90 backdrop-blur-xl border border-slate-300/40 rounded-2xl p-6 shadow-2xl">
               <h3 className="text-lg font-bold text-slate-800 mb-4">Satıcı Bilgileri</h3>
               
-              <div className="flex items-center space-x-4 mb-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-slate-400 to-slate-500 rounded-full flex items-center justify-center text-white font-bold">
-                  {listing.user.first_name.charAt(0)}{listing.user.last_name.charAt(0)}
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center space-x-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-slate-400 to-slate-500 rounded-full flex items-center justify-center text-white font-bold">
+                    {listing.user.first_name.charAt(0)}{listing.user.last_name.charAt(0)}
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-slate-800">
+                      {listing.user.first_name} {listing.user.last_name}
+                    </h4>
+                    <p className="text-slate-600 text-sm">@{listing.user.username}</p>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="font-semibold text-slate-800">
-                    {listing.user.first_name} {listing.user.last_name}
-                  </h4>
-                  <p className="text-slate-600 text-sm">@{listing.user.username}</p>
-                </div>
+                
+                {/* Edit Button - sadece ilan sahibi görebilir */}
+                {user && user.id === listing.user.id && (
+                  <Link 
+                    href={`/listings/${listing.id}/edit`}
+                    className="flex items-center gap-1 px-3 py-1 bg-indigo-600/20 border border-indigo-500/30 text-indigo-600 rounded-lg hover:bg-indigo-600/30 transition-all duration-300 text-sm"
+                  >
+                    <PencilIcon className="h-4 w-4" />
+                    Düzenle
+                  </Link>
+                )}
               </div>
 
               <Link 

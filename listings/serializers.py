@@ -294,3 +294,150 @@ class ListingSerializer(serializers.ModelSerializer):
         if not value.strip():
             raise serializers.ValidationError("Title cannot be empty.")
         return value
+
+# NEW: İlan düzenleme için serializer
+class UpdateListingSerializer(serializers.ModelSerializer):
+    # Araç bilgileri
+    brand_id = serializers.IntegerField(write_only=True, required=False)
+    model_id = serializers.IntegerField(write_only=True, required=False)
+    variant_id = serializers.IntegerField(write_only=True, required=False, allow_null=True)
+    trim_id = serializers.IntegerField(write_only=True, required=False, allow_null=True)
+    
+    # Araç detayları
+    year = serializers.IntegerField(write_only=True, required=False)
+    mileage = serializers.IntegerField(write_only=True, required=False)
+    fuel_type = serializers.ChoiceField(choices=Car.FUEL_CHOICES, write_only=True, required=False)
+    transmission = serializers.ChoiceField(choices=Car.TRANSMISSION_CHOICES, write_only=True, required=False)
+    color = serializers.CharField(max_length=50, write_only=True, required=False)
+    body_type = serializers.CharField(max_length=50, write_only=True, required=False)
+    engine_power = serializers.IntegerField(write_only=True, required=False)
+    
+    # Şehir
+    city_id = serializers.IntegerField(write_only=True, required=False)
+    
+    # Response için read-only alanlar
+    car = CarSerializer(read_only=True)
+    city = CitySerializer(read_only=True)
+    
+    class Meta:
+        model = Listing
+        fields = [
+            'id', 'title', 'description', 'price', 'is_active',
+            'brand_id', 'model_id', 'variant_id', 'trim_id',
+            'year', 'mileage', 'fuel_type', 'transmission', 'color', 'body_type', 'engine_power',
+            'city_id', 'car', 'city', 'created_at', 'updated_at'
+        ]
+        read_only_fields = ['id', 'created_at', 'updated_at']
+    
+    def validate_brand_id(self, value):
+        if not CarBrand.objects.filter(id=value).exists():
+            raise serializers.ValidationError("Geçersiz marka seçimi.")
+        return value
+    
+    def validate_model_id(self, value):
+        if not CarModel.objects.filter(id=value).exists():
+            raise serializers.ValidationError("Geçersiz model seçimi.")
+        return value
+    
+    def validate_variant_id(self, value):
+        if value and not CarVariant.objects.filter(id=value).exists():
+            raise serializers.ValidationError("Geçersiz varyant seçimi.")
+        return value
+    
+    def validate_trim_id(self, value):
+        if value and not CarTrim.objects.filter(id=value).exists():
+            raise serializers.ValidationError("Geçersiz donanım seçimi.")
+        return value
+    
+    def validate_city_id(self, value):
+        if not City.objects.filter(id=value).exists():
+            raise serializers.ValidationError("Geçersiz şehir seçimi.")
+        return value
+    
+    def validate_year(self, value):
+        if value < 1885 or value > 2025:
+            raise serializers.ValidationError("Yıl 1885-2025 arasında olmalıdır.")
+        return value
+    
+    def validate_mileage(self, value):
+        if value < 0:
+            raise serializers.ValidationError("Kilometre negatif olamaz.")
+        return value
+    
+    def validate_engine_power(self, value):
+        if value <= 0:
+            raise serializers.ValidationError("Motor gücü en az 1 HP olmalıdır.")
+        return value
+    
+    def validate_price(self, value):
+        if value <= 0:
+            raise serializers.ValidationError("Fiyat 0'dan büyük olmalıdır.")
+        return value
+    
+    def validate(self, attrs):
+        # Validation sadece değişen alanlar için yapılır
+        if 'model_id' in attrs and 'brand_id' in attrs:
+            model = CarModel.objects.filter(id=attrs['model_id']).first()
+            if model and model.brand_id != attrs['brand_id']:
+                raise serializers.ValidationError("Seçilen model, seçilen marka ile uyumlu değil.")
+        
+        # Variant, model ile uyumlu mu?
+        if 'variant_id' in attrs and 'model_id' in attrs:
+            variant_id = attrs.get('variant_id')
+            if variant_id:
+                variant = CarVariant.objects.filter(id=variant_id).first()
+                if variant and variant.car_id != attrs['model_id']:
+                    raise serializers.ValidationError("Seçilen varyant, seçilen model ile uyumlu değil.")
+        
+        # Trim, variant ile uyumlu mu?
+        if 'trim_id' in attrs and 'variant_id' in attrs:
+            trim_id = attrs.get('trim_id')
+            variant_id = attrs.get('variant_id')
+            if trim_id and variant_id:
+                trim = CarTrim.objects.filter(id=trim_id).first()
+                if trim and trim.variant_id != variant_id:
+                    raise serializers.ValidationError("Seçilen donanım, seçilen varyant ile uyumlu değil.")
+        
+        return attrs
+    
+    def update(self, instance, validated_data):
+        # Araç bilgilerini güncelle
+        car_fields = ['year', 'mileage', 'fuel_type', 'transmission', 'color', 'body_type', 'engine_power']
+        car_data = {}
+        
+        for field in car_fields:
+            if field in validated_data:
+                car_data[field] = validated_data.pop(field)
+        
+        # Marka/model değişikliği var mı?
+        brand_id = validated_data.pop('brand_id', None)
+        model_id = validated_data.pop('model_id', None)
+        variant_id = validated_data.pop('variant_id', None)
+        trim_id = validated_data.pop('trim_id', None)
+        city_id = validated_data.pop('city_id', None)
+        
+        if brand_id:
+            car_data['brand'] = CarBrand.objects.get(id=brand_id)
+        if model_id:
+            car_data['model'] = CarModel.objects.get(id=model_id)
+        if variant_id:
+            car_data['variant'] = CarVariant.objects.get(id=variant_id)
+        elif 'variant_id' in validated_data:  # None gelmiş
+            car_data['variant'] = None
+        if trim_id:
+            car_data['trim'] = CarTrim.objects.get(id=trim_id)
+        elif 'trim_id' in validated_data:  # None gelmiş
+            car_data['trim'] = None
+        
+        # Car objesini güncelle
+        if car_data:
+            for field, value in car_data.items():
+                setattr(instance.car, field, value)
+            instance.car.save()
+        
+        # Şehri güncelle
+        if city_id:
+            instance.city = City.objects.get(id=city_id)
+        
+        # Listing objesini güncelle
+        return super().update(instance, validated_data)

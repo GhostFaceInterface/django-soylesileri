@@ -22,27 +22,8 @@ export default function AuthLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 relative overflow-hidden">
-      {/* Animated Background */}
-      <div className="absolute inset-0 bg-mesh opacity-30"></div>
-      
-      {/* Subtle Floating Shapes */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-10 left-10 w-32 h-32 bg-white/5 rounded-full blur-xl animate-float"></div>
-        <div className="absolute top-1/4 right-20 w-24 h-24 bg-primary-400/10 rounded-xl rotate-45 animate-float" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute bottom-1/4 left-1/4 w-40 h-40 bg-accent-400/8 rounded-full blur-2xl animate-float" style={{ animationDelay: '4s' }}></div>
-        <div className="absolute bottom-20 right-10 w-28 h-28 bg-white/5 rounded-2xl rotate-12 animate-float" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute top-1/2 left-1/3 w-16 h-16 bg-primary-300/10 rounded-full blur-lg animate-float" style={{ animationDelay: '3s' }}></div>
-      </div>
-      
-      {/* Grid Pattern Overlay */}
-      <div 
-        className="absolute inset-0 opacity-5"
-        style={{
-          backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255,255,255,0.4) 1px, transparent 0)`,
-          backgroundSize: '20px 20px'
-        }}
-      />
+    <div className="min-h-screen bg-gray-950 relative overflow-hidden">
+
 
       {/* Header */}
       <header className={`absolute top-0 left-0 right-0 z-20 p-6 transition-all duration-1000 ${
@@ -98,11 +79,11 @@ export default function AuthLayout({
           isLoaded ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-8 opacity-0 scale-95'
         }`} style={{ transitionDelay: '300ms' }}>
           
-          {/* Solid Auth Card with Better Visibility */}
-          <div className="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl p-8 border border-white/20 relative overflow-hidden">
+          {/* Dark Auth Card with Better Visibility */}
+          <div className="bg-gray-900/95 backdrop-blur-xl rounded-2xl shadow-2xl p-8 border border-gray-700/40 relative overflow-hidden">
             {/* Subtle Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-br from-white/50 to-primary-50/30 rounded-2xl"></div>
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary-500 to-accent-500"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-gray-800/20 to-gray-900/30 rounded-2xl"></div>
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-cyan-500"></div>
             
             {/* Content with High Contrast */}
             <div className="relative z-10">

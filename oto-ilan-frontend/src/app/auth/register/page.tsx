@@ -142,12 +142,12 @@ function RegisterPageContent() {
         isAnimated ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
       }`}>
         <div className="relative inline-block">
-          <h1 className="text-3xl font-bold text-gray-800 font-display">
+          <h1 className="text-3xl font-bold text-white font-display">
             Hesap Oluşturun
           </h1>
-          <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-accent-500 to-transparent"></div>
+          <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-blue-500 to-transparent"></div>
         </div>
-        <p className="text-gray-600 text-lg leading-relaxed">
+        <p className="text-gray-300 text-lg leading-relaxed">
           Premium araç pazarımıza katılın ve ayrıcalıklı deneyimi yaşayın
         </p>
       </div>
@@ -160,7 +160,7 @@ function RegisterPageContent() {
         }`} style={{ transitionDelay: '200ms' }}>
           {/* First Name */}
           <div className="space-y-2">
-            <label className="block text-gray-700 text-sm font-semibold tracking-wide">
+            <label className="block text-gray-300 text-sm font-semibold tracking-wide">
               Ad
             </label>
             <div className="relative group">
@@ -179,7 +179,7 @@ function RegisterPageContent() {
 
           {/* Last Name */}
           <div className="space-y-2">
-            <label className="block text-gray-700 text-sm font-semibold tracking-wide">
+            <label className="block text-gray-300 text-sm font-semibold tracking-wide">
               Soyad
             </label>
             <div className="relative group">
@@ -203,7 +203,7 @@ function RegisterPageContent() {
         }`} style={{ transitionDelay: '300ms' }}>
           {/* Username */}
           <div className="space-y-2">
-            <label className="block text-gray-700 text-sm font-semibold tracking-wide">
+            <label className="block text-gray-300 text-sm font-semibold tracking-wide">
               Kullanıcı Adı
             </label>
             <div className="relative group">
@@ -398,12 +398,12 @@ function RegisterPageContent() {
               </div>
             </div>
             <div>
-              <span className="text-gray-700 text-sm font-medium group-hover:text-gray-900 transition-colors duration-200">
-                <Link href="/terms" className="text-primary-600 hover:text-primary-700 underline transition-colors duration-200">
+              <span className="text-gray-300 text-sm font-medium group-hover:text-white transition-colors duration-200">
+                <Link href="/terms" className="text-blue-400 hover:text-blue-300 underline transition-colors duration-200">
                   Kullanım Koşulları
                 </Link>{' '}
                 ve{' '}
-                <Link href="/privacy" className="text-primary-600 hover:text-primary-700 underline transition-colors duration-200">
+                <Link href="/privacy" className="text-blue-400 hover:text-blue-300 underline transition-colors duration-200">
                   Gizlilik Politikası
                 </Link>
                 'nı kabul ediyorum
@@ -451,7 +451,7 @@ function RegisterPageContent() {
         isAnimated ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
       }`} style={{ transitionDelay: '900ms' }}>
         <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
-        <span className="text-gray-500 text-sm font-medium">veya</span>
+        <span className="text-gray-400 text-sm font-medium">veya</span>
         <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
       </div>
 
@@ -474,11 +474,11 @@ function RegisterPageContent() {
       <div className={`text-center transition-all duration-1000 ${
         isAnimated ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
       }`} style={{ transitionDelay: '1100ms' }}>
-        <p className="text-gray-600 text-sm">
+        <p className="text-gray-300 text-sm">
           Zaten hesabınız var mı?{' '}
           <Link 
             href="/auth/login" 
-            className="text-primary-600 hover:text-primary-700 font-semibold transition-colors duration-200 hover:underline"
+            className="text-blue-400 hover:text-blue-300 font-semibold transition-colors duration-200 hover:underline"
           >
             Giriş yapın
           </Link>

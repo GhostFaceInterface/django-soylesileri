@@ -124,21 +124,20 @@ export default function HomePage() {
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-slate-950 to-black relative overflow-hidden">
+    <div className="min-h-screen bg-gray-950 relative overflow-hidden">
       {/* Simplified Background - Performance Optimized */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {/* Single subtle gradient instead of animated circles */}
-        <div className="absolute inset-0 bg-gradient-to-br from-indigo-950/20 via-transparent to-purple-950/10"></div>
+        <div className="absolute inset-0 bg-gray-950"></div>
         
-        {/* Static grid pattern */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(79,70,229,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(79,70,229,0.02)_1px,transparent_1px)] bg-[size:20px_20px]"></div>
+
       </div>
 
       <Header />
       
       {/* Hero Section with Advanced Search */}
       <section className="relative overflow-hidden pt-24 pb-16">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-cyan-600/10 backdrop-blur-3xl"></div>
+        <div className="absolute inset-0 bg-gray-950 backdrop-blur-3xl"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 bg-gradient-to-r from-blue-200 to-cyan-200 bg-clip-text text-transparent">

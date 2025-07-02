@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import type { Province, District, Neighborhood, LocationSelection } from '@/types'
 import { ChevronDownIcon, MapPinIcon } from '@heroicons/react/24/outline'
+import { locationsService } from '@/lib/services/locations'
 import toast from 'react-hot-toast'
 
 interface LocationSelectorProps {
@@ -67,11 +68,8 @@ export const LocationSelector: React.FC<LocationSelectorProps> = ({
   const loadProvinces = async () => {
     try {
       setIsLoadingProvinces(true)
-      // Using API to get correct database IDs (not JSON API_IDs)
-      const response = await fetch('/api/provinces/')
-      const data = await response.json()
-      const provincesArray = Array.isArray(data) ? data : data?.results || []
-      setProvinces(provincesArray)
+      const data = await locationsService.getProvinces()
+      setProvinces(data)
     } catch (error) {
       console.error('Error loading provinces:', error)
       toast.error('İller yüklenirken hata oluştu')
@@ -83,9 +81,7 @@ export const LocationSelector: React.FC<LocationSelectorProps> = ({
   const loadDistricts = async (provinceId: number) => {
     try {
       setIsLoadingDistricts(true)
-      // Using nested API endpoint to get correct database IDs
-      const response = await fetch(`/api/provinces/${provinceId}/districts/`)
-      const data = await response.json()
+      const data = await locationsService.getDistrictsByProvince(provinceId)
       setDistricts(data)
     } catch (error) {
       console.error('Error loading districts:', error)
@@ -98,9 +94,7 @@ export const LocationSelector: React.FC<LocationSelectorProps> = ({
   const loadNeighborhoods = async (districtId: number) => {
     try {
       setIsLoadingNeighborhoods(true)
-      // Using nested API endpoint to get correct database IDs
-      const response = await fetch(`/api/districts/${districtId}/neighborhoods/`)
-      const data = await response.json()
+      const data = await locationsService.getNeighborhoodsByDistrict(districtId)
       setNeighborhoods(data)
     } catch (error) {
       console.error('Error loading neighborhoods:', error)

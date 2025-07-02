@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useState, useEffect, useCallback } from 'react'
-import { locationDataService } from '@/lib/services/locationData'
 import type { Province, District, Neighborhood, LocationSelection } from '@/types'
 import { ChevronDownIcon, MapPinIcon } from '@heroicons/react/24/outline'
 import toast from 'react-hot-toast'
@@ -68,9 +67,11 @@ export const LocationSelector: React.FC<LocationSelectorProps> = ({
   const loadProvinces = async () => {
     try {
       setIsLoadingProvinces(true)
-      // 🚀 Using static JSON instead of API call for better performance
-      const provinces = await locationDataService.getProvinces()
-      setProvinces(provinces)
+      // Using API to get correct database IDs (not JSON API_IDs)
+      const response = await fetch('/api/provinces/')
+      const data = await response.json()
+      const provincesArray = Array.isArray(data) ? data : data?.results || []
+      setProvinces(provincesArray)
     } catch (error) {
       console.error('Error loading provinces:', error)
       toast.error('İller yüklenirken hata oluştu')
@@ -82,9 +83,10 @@ export const LocationSelector: React.FC<LocationSelectorProps> = ({
   const loadDistricts = async (provinceId: number) => {
     try {
       setIsLoadingDistricts(true)
-      // 🚀 Using static JSON instead of API call for better performance
-      const districts = await locationDataService.getDistrictsByProvince(provinceId)
-      setDistricts(districts)
+      // Using nested API endpoint to get correct database IDs
+      const response = await fetch(`/api/provinces/${provinceId}/districts/`)
+      const data = await response.json()
+      setDistricts(data)
     } catch (error) {
       console.error('Error loading districts:', error)
       toast.error('İlçeler yüklenirken hata oluştu')
@@ -96,9 +98,10 @@ export const LocationSelector: React.FC<LocationSelectorProps> = ({
   const loadNeighborhoods = async (districtId: number) => {
     try {
       setIsLoadingNeighborhoods(true)
-      // 🚀 Using static JSON instead of API call for better performance
-      const neighborhoods = await locationDataService.getNeighborhoodsByDistrict(districtId)
-      setNeighborhoods(neighborhoods)
+      // Using nested API endpoint to get correct database IDs
+      const response = await fetch(`/api/districts/${districtId}/neighborhoods/`)
+      const data = await response.json()
+      setNeighborhoods(data)
     } catch (error) {
       console.error('Error loading neighborhoods:', error)
       toast.error('Mahalleler yüklenirken hata oluştu')

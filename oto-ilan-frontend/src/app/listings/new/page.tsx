@@ -55,7 +55,7 @@ const listingSchema = z.object({
   engine_power: z.number().min(1, 'Motor gücü en az 1 HP olmalıdır'),
   
   // İlan bilgileri
-  title: z.string().min(5, 'Başlık en az 5 karakter olmalıdır').max(150, 'Başlık en fazla 150 karakter olabilir'),
+  title: z.string().min(1, 'Başlık boş bırakılamaz').max(150, 'Başlık en fazla 150 karakter olabilir'),
   description: z.string().min(20, 'Açıklama en az 20 karakter olmalıdır'),
   price: z.number().min(1, 'Fiyat 0\'dan büyük olmalıdır'),
   
@@ -295,8 +295,25 @@ export default function NewListingPage() {
     try {
       setIsLoading(true)
       
+      // Sıfır değerleri null'a çevir (location ve variant/trim için)
+      const submitData = {
+        ...data,
+        variant_id: data.variant_id && data.variant_id > 0 ? data.variant_id : null,
+        trim_id: data.trim_id && data.trim_id > 0 ? data.trim_id : null,
+        province_id: data.province_id && data.province_id > 0 ? data.province_id : null,
+        district_id: data.district_id && data.district_id > 0 ? data.district_id : null,
+        neighborhood_id: data.neighborhood_id && data.neighborhood_id > 0 ? data.neighborhood_id : null,
+      }
+      
+      // Eğer location field'ları null ise backend'e gönderme (undefined yap)
+      if (!submitData.province_id) delete submitData.province_id
+      if (!submitData.district_id) delete submitData.district_id
+      if (!submitData.neighborhood_id) delete submitData.neighborhood_id
+      if (!submitData.variant_id) delete submitData.variant_id
+      if (!submitData.trim_id) delete submitData.trim_id
+      
       // Create listing
-      const listing = await authService.createListing(data)
+      const listing = await authService.createListing(submitData)
       
       // Upload images
       const imageFiles = images.map(img => img.file)

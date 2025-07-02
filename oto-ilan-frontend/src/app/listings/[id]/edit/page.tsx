@@ -22,7 +22,7 @@ import Link from 'next/link'
 
 // Form validation schema
 const editListingSchema = z.object({
-  title: z.string().min(10, 'Başlık en az 10 karakter olmalı').max(100, 'Başlık en fazla 100 karakter olabilir'),
+  title: z.string().min(1, 'Başlık boş bırakılamaz').max(100, 'Başlık en fazla 100 karakter olabilir'),
   description: z.string().min(50, 'Açıklama en az 50 karakter olmalı').max(2000, 'Açıklama en fazla 2000 karakter olabilir'),
   price: z.number().min(1000, 'Fiyat en az 1.000 TL olmalı').max(50000000, 'Fiyat en fazla 50.000.000 TL olabilir'),
   
@@ -217,12 +217,22 @@ export default function EditListingPage() {
     try {
       setIsSubmitting(true)
       
-      // Sıfır değerleri null'a çevir
+      // Sıfır değerleri null'a çevir (location ve variant/trim için)
       const submitData = {
         ...data,
         variant_id: data.variant_id && data.variant_id > 0 ? data.variant_id : null,
         trim_id: data.trim_id && data.trim_id > 0 ? data.trim_id : null,
+        province_id: data.province_id && data.province_id > 0 ? data.province_id : null,
+        district_id: data.district_id && data.district_id > 0 ? data.district_id : null,
+        neighborhood_id: data.neighborhood_id && data.neighborhood_id > 0 ? data.neighborhood_id : null,
       }
+      
+      // Eğer location field'ları null ise backend'e gönderme (undefined yap)
+      if (!submitData.province_id) delete submitData.province_id
+      if (!submitData.district_id) delete submitData.district_id
+      if (!submitData.neighborhood_id) delete submitData.neighborhood_id
+      if (!submitData.variant_id) delete submitData.variant_id
+      if (!submitData.trim_id) delete submitData.trim_id
       
       await listingsService.update(params.id as string, submitData)
       

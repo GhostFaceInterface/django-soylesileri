@@ -27,7 +27,6 @@ const registerSchema = z.object({
     .regex(/[0-9]/, 'Şifre en az bir rakam içermeli'),
   password_confirm: z.string(),
   phone_number: z.string().optional(),
-  terms: z.boolean().refine(val => val === true, 'Kullanım koşullarını kabul etmelisiniz'),
 }).refine((data) => data.password === data.password_confirm, {
   message: "Şifreler eşleşmiyor",
   path: ["password_confirm"],
@@ -41,7 +40,6 @@ type RegisterForm = {
   password: string
   password_confirm: string
   phone_number?: string
-  terms: boolean
 }
 
 const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''
@@ -53,6 +51,7 @@ function RegisterPageContent() {
   const [showPasswordConfirm, setShowPasswordConfirm] = useState(false)
   const [passwordStrength, setPasswordStrength] = useState(0)
   const [isAnimated, setIsAnimated] = useState(false)
+  const [termsAccepted, setTermsAccepted] = useState(false)
   
   const {
     register,
@@ -64,15 +63,11 @@ function RegisterPageContent() {
     resolver: zodResolver(registerSchema),
   })
 
-  // Terms checkbox controller
-  const {
-    field: termsField,
-    fieldState: termsFieldState,
-  } = useController({
-    name: 'terms',
-    control,
-    defaultValue: false,
-  })
+  // Terms checkbox - Using simple state instead of useController
+  const handleTermsToggle = () => {
+    setTermsAccepted(!termsAccepted)
+    console.log('Terms toggled:', !termsAccepted)
+  }
 
   const password = watch('password')
 
@@ -100,7 +95,14 @@ function RegisterPageContent() {
   const onSubmit = async (data: RegisterForm) => {
     try {
       clearError()
-      await registerUser(data)
+      
+      // Terms validation
+      if (!termsAccepted) {
+        toast.error('Kullanım koşullarını kabul etmelisiniz')
+        return
+      }
+      
+      await registerUser({...data, terms: termsAccepted})
       toast.success('Hesabınız başarıyla oluşturuldu!')
       router.push('/dashboard')
     } catch (error) {
@@ -222,7 +224,7 @@ function RegisterPageContent() {
 
           {/* Email */}
           <div className="space-y-2">
-            <label className="block text-gray-700 text-sm font-semibold tracking-wide">
+            <label className="block text-gray-300 text-sm font-semibold tracking-wide">
               Email Adresi
             </label>
             <div className="relative group">
@@ -244,7 +246,7 @@ function RegisterPageContent() {
         <div className={`space-y-2 transition-all duration-1000 ${
           isAnimated ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
         }`} style={{ transitionDelay: '400ms' }}>
-          <label className="block text-gray-700 text-sm font-semibold tracking-wide">
+          <label className="block text-gray-300 text-sm font-semibold tracking-wide">
             Telefon Numarası
           </label>
           <div className="relative group">
@@ -265,7 +267,7 @@ function RegisterPageContent() {
         <div className={`space-y-2 transition-all duration-1000 ${
           isAnimated ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
         }`} style={{ transitionDelay: '500ms' }}>
-          <label className="block text-gray-700 text-sm font-semibold tracking-wide">
+          <label className="block text-gray-300 text-sm font-semibold tracking-wide">
             Şifre
           </label>
           <div className="relative group">
@@ -345,7 +347,7 @@ function RegisterPageContent() {
         <div className={`space-y-2 transition-all duration-1000 ${
           isAnimated ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
         }`} style={{ transitionDelay: '600ms' }}>
-          <label className="block text-gray-700 text-sm font-semibold tracking-wide">
+          <label className="block text-gray-300 text-sm font-semibold tracking-wide">
             Şifre Tekrarı
           </label>
           <div className="relative group">
@@ -373,27 +375,24 @@ function RegisterPageContent() {
         <div className={`transition-all duration-1000 ${
           isAnimated ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
         }`} style={{ transitionDelay: '700ms' }}>
-          <label className="flex items-start space-x-3 cursor-pointer group" onClick={() => termsField.onChange(!termsField.value)}>
+          <label className="flex items-start space-x-3 cursor-pointer group">
             <input 
               type="checkbox" 
               className="sr-only" 
-              name={termsField.name}
-              checked={termsField.value}
-              onChange={(e) => termsField.onChange(e.target.checked)}
-              onBlur={termsField.onBlur}
-              ref={termsField.ref}
+              checked={termsAccepted}
+              onChange={handleTermsToggle}
             />
             <div className="relative mt-1">
-              <div className={`w-6 h-6 border-2 rounded-md transition-all duration-300 ${
-                termsField.value 
-                  ? 'bg-primary-600 border-primary-600 shadow-lg shadow-primary-600/30' 
-                  : 'bg-white border-gray-300 group-hover:border-primary-400 group-hover:shadow-md'
+              <div className={`w-6 h-6 border-2 rounded-lg transition-all duration-300 transform ${
+                termsAccepted 
+                  ? 'bg-blue-500 border-blue-500 shadow-lg shadow-blue-500/50 scale-105' 
+                  : 'bg-gray-700 border-gray-400 group-hover:border-blue-400 group-hover:shadow-lg group-hover:bg-gray-600 group-hover:scale-105'
               }`}></div>
               <div className="absolute inset-0 flex items-center justify-center">
-                <CheckIcon className={`w-4 h-4 transition-all duration-300 ${
-                  termsField.value 
-                    ? 'text-white opacity-100 scale-100' 
-                    : 'text-primary-600 opacity-0 scale-75'
+                <CheckIcon className={`w-5 h-5 transition-all duration-300 transform ${
+                  termsAccepted 
+                    ? 'text-white opacity-100 scale-100 rotate-0' 
+                    : 'text-gray-400 opacity-0 scale-50 rotate-12'
                 }`} />
               </div>
             </div>
@@ -408,11 +407,7 @@ function RegisterPageContent() {
                 </Link>
                 'nı kabul ediyorum
               </span>
-              {errors.terms && (
-                <p className="text-red-500 text-sm font-medium mt-1 animate-fade-in-up">
-                  {errors.terms.message}
-                </p>
-              )}
+
             </div>
           </label>
         </div>
@@ -450,9 +445,9 @@ function RegisterPageContent() {
       <div className={`flex items-center space-x-4 transition-all duration-1000 ${
         isAnimated ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
       }`} style={{ transitionDelay: '900ms' }}>
-        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-600 to-transparent"></div>
         <span className="text-gray-400 text-sm font-medium">veya</span>
-        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-600 to-transparent"></div>
       </div>
 
       {/* Google Register */}

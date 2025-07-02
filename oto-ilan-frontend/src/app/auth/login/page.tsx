@@ -29,6 +29,7 @@ function LoginPageContent() {
   const [showForgotPassword, setShowForgotPassword] = useState(false)
   const [forgotEmail, setForgotEmail] = useState('')
   const [isAnimated, setIsAnimated] = useState(false)
+  const [rememberMe, setRememberMe] = useState(false)
   
   const {
     register,
@@ -44,14 +45,11 @@ function LoginPageContent() {
     },
   })
 
-  // Remember Me checkbox controller
-  const {
-    field: rememberMeField,
-  } = useController({
-    name: 'rememberMe',
-    control,
-    defaultValue: false,
-  })
+  // Remember Me checkbox - Using simple state instead of useController
+  const handleRememberMeToggle = () => {
+    setRememberMe(!rememberMe)
+    console.log('Remember me toggled:', !rememberMe)
+  }
 
   useEffect(() => {
     const timer = setTimeout(() => setIsAnimated(true), 200)
@@ -64,10 +62,10 @@ function LoginPageContent() {
       console.log('Login attempt:', { 
         email: data.email, 
         password: data.password, 
-        rememberMe: data.rememberMe 
+        rememberMe: rememberMe 
       })
       
-      await emailLogin(data.email, data.password, data.rememberMe)
+      await emailLogin(data.email, data.password, rememberMe)
       
       toast.success('Giriş başarılı! Hoş geldiniz 🎉', {
         duration: 4000,
@@ -206,29 +204,25 @@ function LoginPageContent() {
           isAnimated ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
         }`} style={{ transitionDelay: '400ms' }}>
           <label 
-            className="flex items-center space-x-3 cursor-pointer group" 
-            onClick={() => rememberMeField.onChange(!rememberMeField.value)}
+            className="flex items-center space-x-3 cursor-pointer group"
           >
             <input 
               type="checkbox" 
               className="sr-only" 
-              name={rememberMeField.name}
-              checked={rememberMeField.value || false}
-              onChange={(e) => rememberMeField.onChange(e.target.checked)}
-              onBlur={rememberMeField.onBlur}
-              ref={rememberMeField.ref}
+              checked={rememberMe}
+              onChange={handleRememberMeToggle}
             />
             <div className="relative">
-              <div className={`w-6 h-6 border-2 rounded-md transition-all duration-300 ${
-                rememberMeField.value 
-                  ? 'bg-blue-600 border-blue-600 shadow-lg shadow-blue-600/30' 
-                  : 'bg-white border-gray-300 group-hover:border-blue-400 group-hover:shadow-md'
+              <div className={`w-6 h-6 border-2 rounded-lg transition-all duration-300 transform ${
+                rememberMe 
+                  ? 'bg-blue-500 border-blue-500 shadow-lg shadow-blue-500/50 scale-105' 
+                  : 'bg-gray-700 border-gray-400 group-hover:border-blue-400 group-hover:shadow-lg group-hover:bg-gray-600 group-hover:scale-105'
               }`}></div>
               <div className="absolute inset-0 flex items-center justify-center">
-                <CheckIcon className={`w-4 h-4 transition-all duration-300 ${
-                  rememberMeField.value 
-                    ? 'text-white opacity-100 scale-100' 
-                    : 'text-blue-600 opacity-0 scale-75'
+                <CheckIcon className={`w-5 h-5 transition-all duration-300 transform ${
+                  rememberMe 
+                    ? 'text-white opacity-100 scale-100 rotate-0' 
+                    : 'text-gray-400 opacity-0 scale-50 rotate-12'
                 }`} />
               </div>
             </div>
@@ -279,9 +273,9 @@ function LoginPageContent() {
       <div className={`flex items-center space-x-4 transition-all duration-1000 ${
         isAnimated ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
       }`} style={{ transitionDelay: '600ms' }}>
-        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-600 to-transparent"></div>
         <span className="text-gray-400 text-sm font-medium">veya</span>
-        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-600 to-transparent"></div>
       </div>
 
       {/* Google Login */}
